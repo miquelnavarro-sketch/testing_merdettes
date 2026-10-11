@@ -20,6 +20,7 @@
   .control-bar{background:#eef2f7;border:1px solid var(--border);padding:10px 15px;border-radius:6px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
   .control-group{display:flex;align-items:center;gap:8px}
   .control-group label{font-weight:bold;color:var(--primary);font-size:11px}
+  #autosave-status{font-size:11px;color:#28a745;font-weight:bold}
   .header{display:flex;justify-content:space-between;border-bottom:2px solid var(--accent);padding-bottom:15px;margin-bottom:25px}
   .brand p{margin:2px 0;color:#555;font-size:11px}
   .logo-hotel{width:260px;max-height:60px;object-fit:contain;display:block;margin-bottom:8px}
@@ -90,7 +91,7 @@
   @media print{
     #pin-lock-overlay{display:none!important}
     body{background:#fff;padding:0}.container{box-shadow:none;padding:0;max-width:100%}
-    .no-print,.control-bar,.btn-remove,.btn-add,.btn-revert,.chk-paid-wrap,.edit-days{display:none!important}
+    .no-print,.control-bar,.btn-remove,.btn-add,.btn-revert,.chk-paid-wrap,.edit-days,#autosave-status{display:none!important}
     input,select,textarea{border:none!important;background:transparent!important;appearance:none;padding:0!important}
     .header,.grid,.sec-wrapper,.summary-block,.tax-card,.cancellation-section,.bank-card,.signatures-wrapper,tr,.payment-row,.canc-row{page-break-inside:avoid!important}
     th{background:var(--primary)!important;color:#fff!important;-webkit-print-color-adjust:exact}
@@ -137,6 +138,7 @@
         <option value="ca">Català</option><option value="es">Español</option>
         <option value="en">English</option><option value="fr">Français</option>
       </select>
+      <span id="autosave-status"></span>
     </div>
   </div>
 
@@ -287,6 +289,7 @@
 const HOTEL_CODE = "Rivoli";
 const CORRECT_PIN = "Rivoli2026@";
 const SHEET_URL = "https://script.google.com/macros/s/AKfycbxBttPfxYrXB2jWMqArZA5PvnOsXZOGyja7kWATUeeayZILlU94cKsE-vd61vS6mEV1xg/exec";
+const LS_KEY = "proforma_autosave_v1";
 
 let uid = 0;
 const nuevoId = () => 'x' + (++uid);
@@ -308,6 +311,25 @@ function hoyISO(){ const d=new Date(); return new Date(d.getTime()-d.getTimezone
 function eur(c){ return (c/100).toFixed(2)+' €'; }
 function fmtFecha(d){ if(!d||isNaN(d)) return 'dd/mm/aaaa'; const p=n=>String(n).padStart(2,'0'); return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear(); }
 const T = () => traducciones[state.lang];
+
+/* --- AUTOGUARDADO EN EL NAVEGADOR (localStorage) --- */
+let _autoT;
+function autoguardar(){
+  clearTimeout(_autoT);
+  _autoT = setTimeout(()=>{
+    try{
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
+      const el = document.getElementById('autosave-status');
+      if(el){ const h=new Date(); el.textContent = '✓ Desat ' + String(h.getHours()).padStart(2,'0') + ':' + String(h.getMinutes()).padStart(2,'0'); }
+    }catch(e){}
+  }, 400);
+}
+function ajustarUid(){
+  let max = 0;
+  const scan = o=>{ if(o && o.id){ const n = parseInt(String(o.id).replace('x',''))||0; if(n>max) max=n; } };
+  (state.items||[]).forEach(scan); (state.payments||[]).forEach(scan); (state.cancellations||[]).forEach(scan);
+  uid = max;
+}
 
 const traducciones = {
   ca:{establiment:"Establiment:",rao_social:"Raó Social:",dom_social:"Dom. Social:",tel_hotel:"Tel. Hotel:",tel_reserves:"Tel. Reserves:",email_grups:"Grups:",num_proforma:"Núm:",data_doc:"Data:",title_client:"Dades del Client / Agència",label_company:"Empresa / Agència:",label_nif:"NIF / CIF:",label_contact:"Persona Contacte:",label_email:"Email / Telèfon:",title_group:"Detalls del Grup",label_group_name:"Nom del Grup:",label_pms_ref:"Ref. PMS:",label_dates:"Entrada / Sortida:",label_nights:"Nits:",th_concept:"Concepte / Servei",th_item_dates:"Dates",th_units:"Unitats",th_nights:"Nits/Dies",th_price:"Preu Un. IVA incl. (€)",th_discount:"Desc. (%)",th_vat_type:"Tipus IVA",th_total:"Total (€)",sec_accommodation:"1. ALLOTJAMENT (IVA 10%)",btn_add_room:"+ Afegir Habitació",sec_rooms:"2. SALES I EQUIPAMENTS (IVA 21%)",btn_add_room_eq:"+ Afegir Sala",sec_catering:"3. RESTAURACIÓ I CÀTERING (IVA 10%)",btn_add_catering:"+ Afegir Servei",tax_title:"Taxa Turística (Persones > 17 anys - Barcelona)",tax_pax_label:"Persones > 17 anys:",tax_nights_label:"Nits (Màx 7):",tax_rate_label:"Tarifa Nit/Pax:",tax_total_label:"Total Taxa:",title_payments:"Calendari de Dipòsits i Pagaments",btn_add_deposit:"+ Dipòsit",pct_alert_msg:"⚠️ Els dipòsits superen el 100%!",base_10_label:"Base 10%:",vat_10_label:"IVA 10%:",base_21_label:"Base 21%:",vat_21_label:"IVA 21%:",base_tax_label:"Base Taxa:",vat_tax_label:"IVA Taxa:",total_proforma_label:"TOTAL:",title_cancellation:"Condicions de Cancel·lació",btn_add_cancellation:"+ Tram",bank_title:"💳 Dades Bancàries",bank_title_tpv:"💳 Pagament per Targeta (TPV)",bank_label_bank:"Entitat",bank_concept_text:"Cal indicar el número de proforma en el concepte.",tpv_concept_text:"Podeu pagar amb targeta via plataforma segura.",tpv_url_label:"🔗 Enllaç de pagament:",notes_tax_disclaimer:"• Si no està inclosa, la taxa es liquida al check-in.",client_signature_title:"Conformitat del Client",client_company_label:"Empresa:",client_nif_label:"NIF:",client_rep_label:"Representant:",hotel_dept:"Departament de reserves",btn_print:"Imprimir / PDF",deposit_label:"• Dipòsit:",rest_label:"Resta Pendent:",before_text:"abans del:",paid_text:"Pagat",paid_tag:"(PAGAT)",mode_fixed:"Data Fixa",mode_before_arr:"dies abans d'arribada",mode_after_conf:"dies desprès confirmació",canc_free_1:"• Sense despeses fins al",canc_between:"• Entre el",canc_and_the:"i el",canc_arrival:"i l'arribada:",canc_expenses:"% despeses",canc_e_free:"• Sense despeses fins al",canc_e_days:"dies abans:",canc_e_between:"• Entre el",canc_e_and:"i el",canc_e_days2:"dies abans",canc_e_arrival:"i l'arribada:",canc_e_expenses:"% despeses"},
@@ -431,6 +453,7 @@ function renderCancels(){
 }
 
 function renderCampos(){
+  document.getElementById('lang-select').value = state.lang;
   document.querySelector('[data-field="num"]').value = state.num;
   document.querySelector('[data-field="docDate"]').value = state.docDate;
   ['company','nif','name','email'].forEach(f=>document.querySelector(`[data-scope="client"][data-field="${f}"]`).value = state.client[f]);
@@ -523,6 +546,8 @@ function recalc(){
     else if(c.type==='ARRIVAL') span.innerHTML = `${t.canc_between} <strong>${dt1}</strong> ${t.canc_arrival} <strong>${c.pct}%</strong> ${t.canc_expenses}`;
     else span.innerHTML = `${t.canc_between} <strong>${dt1}</strong> ${t.canc_and_the} <strong>${dt2}</strong>: <strong>${c.pct}%</strong> ${t.canc_expenses}`;
   });
+
+  autoguardar();
 }
 
 function nochesEntre(a,b){ if(!a||!b) return 0; const d1=new Date(a),d2=new Date(b); if(!(d2>d1)) return 0; return Math.round((d2-d1)/86400000); }
@@ -653,7 +678,6 @@ function cargar(){
       state.items=(p.items||[]).map(it=>({id:nuevoId(),cat:catPorBody[it.bodyId]||'ALLOTJAMENT',concept:it.concept,custom:!!it.isCustom,d1:it.startDate||'',d2:it.endDate||'',qty:it.qty||0,nits:it.nits||0,priceCents:Math.round((it.preu||0)*100),desc:it.desc||0,iva:it.iva||10}));
       state.payments=(p.payments||[]).map(pm=>({id:nuevoId(),isFinal:!!pm.isFinal,pct:pm.pct||0,mode:pm.mode||'FIXED',days:pm.days||0,date:pm.date||'',paid:!!pm.isPaid}));
       state.cancellations=(p.cancellations||[]).map(c=>({id:nuevoId(),type:c.type,d1:c.d1||0,d2:c.d2||0,pct:c.pct||0}));
-      document.getElementById('lang-select').value=state.lang;
       render();
     })
     .catch(()=>alert('No s\'ha pogut carregar.'));
@@ -670,7 +694,19 @@ document.getElementById('pin-form').addEventListener('submit', e=>{
 window.addEventListener('DOMContentLoaded', ()=>{
   if(sessionStorage.getItem('ok')==='1') document.getElementById('pin-lock-overlay').style.display='none';
   document.getElementById('lang-select').addEventListener('change', e=>{ state.lang=e.target.value; render(); });
-  nuevaProforma();
+
+  let restaurado = false;
+  try{
+    const guardat = localStorage.getItem(LS_KEY);
+    if(guardat){
+      const parsed = JSON.parse(guardat);
+      state = Object.assign(estadoVacio(), parsed);
+      ajustarUid();
+      restaurado = true;
+    }
+  }catch(e){ restaurado = false; }
+
+  if(restaurado){ render(); } else { nuevaProforma(); }
   refrescarLista();
 });
 </script>
