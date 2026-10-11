@@ -33,11 +33,13 @@
   .field-group input,.field-group select{flex:1;padding:5px 8px;border:1px solid var(--border);border-radius:4px;font-size:12px}
   .section-header{background:#eef2f7;color:var(--primary);font-weight:bold;font-size:12px;padding:8px 10px;border-left:4px solid var(--accent);margin:20px 0 8px;display:flex;justify-content:space-between;align-items:center}
   table{width:100%;border-collapse:collapse;margin-bottom:10px}
+  table.grid-table{table-layout:fixed}
   th{background:var(--primary);color:#fff;padding:10px 8px;text-align:left;font-size:11.5px}
   td{padding:8px 6px;border-bottom:1px solid #eee;vertical-align:middle}
   input[type=text],input[type=number],input[type=date],select{width:100%;padding:6px;border:1px solid var(--border);border-radius:4px;font-size:12px}
-  .date-range-cell{display:inline-flex;gap:4px;align-items:center;justify-content:center;min-width:210px}
-  .date-range-cell input[type=date]{font-size:11px;padding:2px 3px;min-width:95px;text-align:center;height:24px}
+  .date-range-cell{display:flex;gap:4px;align-items:center;justify-content:center}
+  .date-range-cell input[type=date]{flex:1;min-width:0;font-size:11px;padding:2px 3px;text-align:center;height:24px}
+  .subtotal{white-space:nowrap}
   .btn{padding:5px 12px;border:none;border-radius:4px;cursor:pointer;font-weight:600;font-size:11px}
   .btn-add{background:#28a745;color:#fff}.btn-save{background:#007bff;color:#fff}
   .btn-remove{background:#dc3545;color:#fff;padding:3px 7px;font-size:11px}
@@ -175,32 +177,32 @@
     </div>
   </div>
 
-  <table><thead><tr>
-    <th style="width:26%" data-t="th_concept">Concepte / Servei</th>
-    <th style="width:20%;text-align:center" data-t="th_item_dates">Dates</th>
-    <th style="width:6%;text-align:center" data-t="th_units">Unitats</th>
-    <th style="width:6%;text-align:center" data-t="th_nights">Nits/Dies</th>
-    <th style="width:12%;text-align:right" data-t="th_price">Preu Un. IVA incl. (€)</th>
-    <th style="width:6%;text-align:center" data-t="th_discount">Desc. (%)</th>
-    <th style="width:13%;text-align:center" data-t="th_vat_type">Tipus IVA</th>
-    <th style="width:11%;text-align:right" data-t="th_total">Total (€)</th>
-    <th style="width:2%"></th>
+  <table class="grid-table"><colgroup><col style="width:24%"><col style="width:19%"><col style="width:6%"><col style="width:6%"><col style="width:12%"><col style="width:6%"><col style="width:12%"><col style="width:12%"><col style="width:3%"></colgroup><thead><tr>
+    <th data-t="th_concept">Concepte / Servei</th>
+    <th style="text-align:center" data-t="th_item_dates">Dates</th>
+    <th style="text-align:center" data-t="th_units">Unitats</th>
+    <th style="text-align:center" data-t="th_nights">Nits/Dies</th>
+    <th style="text-align:right" data-t="th_price">Preu Un. IVA incl. (€)</th>
+    <th style="text-align:center" data-t="th_discount">Desc. (%)</th>
+    <th style="text-align:center" data-t="th_vat_type">Tipus IVA</th>
+    <th style="text-align:right" data-t="th_total">Total (€)</th>
+    <th></th>
   </tr></thead></table>
 
   <div class="sec-wrapper">
     <div class="section-header"><span data-t="sec_accommodation">1. ALLOTJAMENT (IVA 10%)</span>
       <button class="btn btn-add" data-action="add-item" data-cat="ALLOTJAMENT" data-t="btn_add_room">+ Afegir Habitació</button></div>
-    <table><tbody id="body-allotjament"></tbody></table>
+    <table class="grid-table"><colgroup><col style="width:24%"><col style="width:19%"><col style="width:6%"><col style="width:6%"><col style="width:12%"><col style="width:6%"><col style="width:12%"><col style="width:12%"><col style="width:3%"></colgroup><tbody id="body-allotjament"></tbody></table>
   </div>
   <div class="sec-wrapper">
     <div class="section-header"><span data-t="sec_rooms">2. SALES I EQUIPAMENTS (IVA 21%)</span>
       <button class="btn btn-add" data-action="add-item" data-cat="SALES" data-t="btn_add_room_eq">+ Afegir Sala</button></div>
-    <table><tbody id="body-sales"></tbody></table>
+    <table class="grid-table"><colgroup><col style="width:24%"><col style="width:19%"><col style="width:6%"><col style="width:6%"><col style="width:12%"><col style="width:6%"><col style="width:12%"><col style="width:12%"><col style="width:3%"></colgroup><tbody id="body-sales"></tbody></table>
   </div>
   <div class="sec-wrapper">
     <div class="section-header"><span data-t="sec_catering">3. RESTAURACIÓ I CÀTERING (IVA 10%)</span>
       <button class="btn btn-add" data-action="add-item" data-cat="RESTAURACIO" data-t="btn_add_catering">+ Afegir Servei</button></div>
-    <table><tbody id="body-restauracio"></tbody></table>
+    <table class="grid-table"><colgroup><col style="width:24%"><col style="width:19%"><col style="width:6%"><col style="width:6%"><col style="width:12%"><col style="width:6%"><col style="width:12%"><col style="width:12%"><col style="width:3%"></colgroup><tbody id="body-restauracio"></tbody></table>
   </div>
 
   <div class="tax-card" id="tax-card">
@@ -343,11 +345,11 @@ function renderItems(){
     const ivaOpt = v=>`<option value="${v}" ${it.iva===v?'selected':''}>${v}% IVA</option>`;
     tr.innerHTML = `
       <td class="concept-cell">${concepto}</td>
-      <td class="date-range-cell" data-date-formatted="">
+      <td><div class="date-range-cell" data-date-formatted="">
         <input type="date" data-scope="item" data-id="${it.id}" data-field="d1" value="${esc(it.d1)}">
         <span>-</span>
         <input type="date" data-scope="item" data-id="${it.id}" data-field="d2" value="${esc(it.d2)}">
-      </td>
+      </div></td>
       <td><input type="number" data-scope="item" data-id="${it.id}" data-field="qty" value="${it.qty}" min="0" style="text-align:center"></td>
       <td><input type="number" data-scope="item" data-id="${it.id}" data-field="nits" value="${it.nits}" min="0" style="text-align:center"></td>
       <td><input type="number" data-scope="item" data-id="${it.id}" data-field="price" value="${it.priceCents?(it.priceCents/100).toFixed(2):''}" step="any" placeholder="0.00" style="text-align:right"></td>
