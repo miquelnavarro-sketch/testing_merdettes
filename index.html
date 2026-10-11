@@ -1,0 +1,177 @@
+
+
+<div id="pin-lock-overlay">
+  <div class="pin-card">
+    <h3>🔒 Accés Restringit</h3>
+    <p>Hotel SERHS Rivoli Rambla - Barcelona</p>
+    <form id="pin-form">
+      <input type="password" id="pin-input" placeholder="Introdueix la clau">
+      <button type="submit">Entrar</button>
+    </form>
+    <div id="pin-error-msg">⚠️ Clau incorrecta!</div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="control-bar no-print">
+    <div class="control-group">
+      <label>📊 Google Sheets:</label>
+      <select id="proformas-list" style="width:220px"><option value="">-- Selecciona --</option></select>
+      <button class="btn btn-save" data-action="load">Carregar</button>
+    </div>
+    <div class="control-group">
+      <button class="btn btn-add" data-action="new">+ Nova Proforma</button>
+      <button class="btn btn-save" data-action="save">💾 Desar a Google Sheets</button>
+      <label for="lang-select" style="margin-left:10px">🌐 Idioma:</label>
+      <select id="lang-select" data-action="lang" style="width:100px">
+        <option value="ca">Català</option><option value="es">Español</option>
+        <option value="en">English</option><option value="fr">Français</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="header">
+    <div class="brand">
+      <img src="img/SHRivoli_RamblaH.jpg" alt="Hotel" class="logo-hotel">
+      <p><strong data-t="establiment">Establiment:</strong> La Rambla, 128 - 08002 Barcelona</p>
+      <p><strong data-t="rao_social">Raó Social:</strong> PASTUIRASER, S.L.U. | <strong>NIF:</strong> B64337827</p>
+      <p><strong data-t="dom_social">Dom. Social:</strong> C/ Garbí, 88-90 - 08397 Pineda de Mar</p>
+      <p><strong data-t="tel_hotel">Tel. Hotel:</strong> +34 93 481 76 76 | <strong data-t="tel_reserves">Tel. Reserves:</strong> +34 93 481 76 53</p>
+      <p><strong>Email Hotel:</strong> info.rivolirambla@grupserhs.com | <strong data-t="email_grups">Grups:</strong> grups.rivolirambla@grupserhs.com</p>
+    </div>
+    <div class="doc-meta">
+      <h2>PROFORMA</h2>
+      <div class="meta-row"><label data-t="num_proforma">Núm:</label>
+        <input type="text" data-scope="root" data-field="num" style="width:120px;text-align:right;font-weight:bold"></div>
+      <div class="meta-row"><label data-t="data_doc">Data:</label>
+        <input type="date" data-scope="root" data-field="docDate" style="width:125px"></div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3 data-t="title_client">Dades del Client / Agència</h3>
+      <div class="field-group"><label data-t="label_company">Empresa / Agència:</label><input type="text" data-scope="client" data-field="company"></div>
+      <div class="field-group"><label data-t="label_nif">NIF / CIF:</label><input type="text" data-scope="client" data-field="nif"></div>
+      <div class="field-group"><label data-t="label_contact">Persona Contacte:</label><input type="text" data-scope="client" data-field="name"></div>
+      <div class="field-group"><label data-t="label_email">Email / Telèfon:</label><input type="text" data-scope="client" data-field="email"></div>
+    </div>
+    <div class="card">
+      <h3 data-t="title_group">Detalls del Grup / Event</h3>
+      <div class="field-group"><label data-t="label_group_name">Nom del Grup:</label><input type="text" data-scope="group" data-field="name"></div>
+      <div class="field-group"><label data-t="label_pms_ref">Ref. Reserva / PMS:</label><input type="text" data-scope="group" data-field="pmsRef"></div>
+      <div class="field-group"><label data-t="label_dates">Entrada / Sortida:</label>
+        <input type="date" data-scope="group" data-field="inDate" style="width:48%">
+        <input type="date" data-scope="group" data-field="outDate" style="width:48%;margin-left:2%"></div>
+      <div class="field-group"><label data-t="label_nights">Nits:</label><input type="text" id="nits-num" readonly="" style="background:#eee;font-weight:bold"></div>
+    </div>
+  </div>
+
+  <table><thead><tr>
+    <th style="width:26%" data-t="th_concept">Concepte / Servei</th>
+    <th style="width:20%;text-align:center" data-t="th_item_dates">Dates</th>
+    <th style="width:6%;text-align:center" data-t="th_units">Unitats</th>
+    <th style="width:6%;text-align:center" data-t="th_nights">Nits/Dies</th>
+    <th style="width:12%;text-align:right" data-t="th_price">Preu Un. IVA incl. (€)</th>
+    <th style="width:6%;text-align:center" data-t="th_discount">Desc. (%)</th>
+    <th style="width:13%;text-align:center" data-t="th_vat_type">Tipus IVA</th>
+    <th style="width:11%;text-align:right" data-t="th_total">Total (€)</th>
+    <th style="width:2%"></th>
+  </tr></thead></table>
+
+  <div class="sec-wrapper">
+    <div class="section-header"><span data-t="sec_accommodation">1. ALLOTJAMENT (IVA 10%)</span>
+      <button class="btn btn-add" data-action="add-item" data-cat="ALLOTJAMENT" data-t="btn_add_room">+ Afegir Habitació</button></div>
+    <table><tbody id="body-allotjament"></tbody></table>
+  </div>
+  <div class="sec-wrapper">
+    <div class="section-header"><span data-t="sec_rooms">2. SALES I EQUIPAMENTS (IVA 21%)</span>
+      <button class="btn btn-add" data-action="add-item" data-cat="SALES" data-t="btn_add_room_eq">+ Afegir Sala</button></div>
+    <table><tbody id="body-sales"></tbody></table>
+  </div>
+  <div class="sec-wrapper">
+    <div class="section-header"><span data-t="sec_catering">3. RESTAURACIÓ I CÀTERING (IVA 10%)</span>
+      <button class="btn btn-add" data-action="add-item" data-cat="RESTAURACIO" data-t="btn_add_catering">+ Afegir Servei</button></div>
+    <table><tbody id="body-restauracio"></tbody></table>
+  </div>
+
+  <div class="tax-card" id="tax-card">
+    <h4><input type="checkbox" data-scope="tax" data-field="enabled" style="width:16px;height:16px">
+      <span data-t="tax_title">Taxa Turística (Persones &gt; 17 anys - Barcelona)</span></h4>
+    <div class="tax-grid">
+      <div><label data-t="tax_pax_label">Persones &gt; 17 anys:</label><input type="number" data-scope="tax" data-field="pax" min="0"></div>
+      <div><label data-t="tax_nights_label">Nits (Màx 7):</label><input type="number" data-scope="tax" data-field="nits" min="0" max="7"></div>
+      <div><label data-t="tax_rate_label">Tarifa Nit/Pax:</label><input type="text" id="tax-rate-display" readonly="" style="background:#eef;font-weight:bold"></div>
+      <div><label data-t="tax_total_label">Total Taxa:</label><input type="text" id="tax-total-display" readonly="" style="background:#eef;font-weight:bold;color:var(--primary)"></div>
+    </div>
+  </div>
+
+  <div class="summary-block">
+    <div class="payment-schedule">
+      <h4><span data-t="title_payments">Calendari de Dipòsits i Pagaments</span>
+        <button class="btn btn-add" data-action="add-payment" data-t="btn_add_deposit">+ Dipòsit</button></h4>
+      <div id="payment-rows-container"></div>
+      <div id="pct-alert" class="pct-alert" data-t="pct_alert_msg">⚠️ Els dipòsits superen el 100%!</div>
+    </div>
+    <div>
+      <table class="totals-table">
+        <tbody><tr><td data-t="base_10_label">Base 10%:</td><td id="base-10">0.00 €</td></tr>
+        <tr><td data-t="vat_10_label">IVA 10%:</td><td id="iva-10">0.00 €</td></tr>
+        <tr><td data-t="base_21_label">Base 21%:</td><td id="base-21">0.00 €</td></tr>
+        <tr><td data-t="vat_21_label">IVA 21%:</td><td id="iva-21">0.00 €</td></tr>
+        <tr id="row-taxa-base" style="display:none;color:#555"><td data-t="base_tax_label">Base Taxa:</td><td id="val-taxa-base">0.00 €</td></tr>
+        <tr id="row-taxa-iva" style="display:none;color:#555"><td data-t="vat_tax_label">IVA Taxa:</td><td id="val-taxa-iva">0.00 €</td></tr>
+        <tr class="grand-total"><td><strong data-t="total_proforma_label">TOTAL:</strong></td><td id="total-final"><strong>0.00 €</strong></td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="cancellation-section">
+    <h4><span data-t="title_cancellation">Condicions de Cancel·lació</span>
+      <button class="btn btn-add" data-action="add-canc" data-t="btn_add_cancellation">+ Tram</button></h4>
+    <div id="canc-rows-container"></div>
+  </div>
+
+  <div class="bank-card">
+    <h4><span id="bank-title" data-t="bank_title">💳 Dades Bancàries</span>
+      <select id="payment-type-toggle" class="no-print" data-scope="root" data-field="paymentType" style="font-size:11px">
+        <option value="BANK">🏦 Transferència</option><option value="TPV">💳 TPV Virtual</option></select></h4>
+    <div id="bank-grid" class="bank-details-grid">
+      <div class="bank-item"><span class="label" data-t="bank_label_bank">Entitat</span><span class="value">CAIXABANK</span></div>
+      <div class="bank-item"><span class="label">IBAN</span><span class="value">ES51 2100 3422 12 2210119441</span></div>
+      <div class="bank-item"><span class="label">SWIFT</span><span class="value">CAIXESBBXXX</span></div>
+    </div>
+    <div id="tpv-box" class="tpv-details-box">
+      <label data-t="tpv_url_label">🔗 Enllaç de pagament:</label>
+      <input type="url" data-scope="root" data-field="tpvUrl" placeholder="https://...">
+      <a id="tpv-print-link" href="#" class="tpv-print-link">-</a>
+    </div>
+    <div class="bank-notice">📌 <span id="bank-notice-text" data-t="bank_concept_text">Cal indicar el número de proforma.</span></div>
+    <div class="tax-disclaimer" data-t="notes_tax_disclaimer">• Si no està inclosa, la taxa es liquida al check-in.</div>
+    <textarea data-scope="root" data-field="notes" placeholder="Observacions..."></textarea>
+  </div>
+
+  <div class="signatures-wrapper">
+    <div class="client-signature-box">
+      <h4 data-t="client_signature_title">Conformitat del Client</h4>
+      <p><strong data-t="client_company_label">Empresa:</strong> <span id="disp-company">-</span></p>
+      <p><strong data-t="client_nif_label">NIF:</strong> <span id="disp-nif">-</span></p>
+      <p><strong data-t="client_rep_label">Representant:</strong> <span id="disp-name">-</span></p>
+      <div class="signature-line-space" data-sign-label="Signatura i Segell"></div>
+    </div>
+    <div class="hotel-signature-box">
+      <div class="contact-person">
+        <img src="img/MA.jpg" class="avatar-ma" alt="">
+        <div class="contact-info"><p class="name">Maite Ayora</p><p data-t="hotel_dept">Departament de reserves</p><p>Hotel SERHS Rivoli Rambla</p></div>
+      </div>
+      <img src="img/signamn.png" class="img-sign" alt="">
+    </div>
+  </div>
+
+  <div style="margin-top:20px;text-align:right">
+    <button id="btn-print" class="btn btn-print" data-action="print" data-t="btn_print">Imprimir / PDF</button>
+  </div>
+</div>
+
+
+
