@@ -5,98 +5,121 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Proforma Grups - Hotel SERHS Rivoli Rambla</title>
 <style>
-  :root{--primary:#1b2a4a;--accent:#c5a059;--bg:#f4f6f8;--border:#dcdfe6;--text:#2c3e50}
-  *{box-sizing:border-box;font-family:Arial,Helvetica,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
-  body{background:var(--bg);color:var(--text);margin:0;padding:20px;font-size:13px}
-  .container{max-width:1250px;margin:0 auto;background:#fff;padding:35px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+  :root{
+    --primary:#1f2d4d;--primary-soft:#2b3d63;--accent:#b8935a;
+    --bg:#eef0f3;--border:#e2e5ea;--line:#e6e9ee;--text:#333;--muted:#6b7280;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --serif:Georgia,"Times New Roman",serif;
+  }
+  *{box-sizing:border-box}
+  body{font-family:var(--sans);background:var(--bg);color:var(--text);margin:0;padding:24px;font-size:13px;-webkit-font-smoothing:antialiased}
+  .container{max-width:1150px;margin:0 auto;background:#fff;padding:40px;border-radius:6px;box-shadow:0 2px 14px rgba(20,30,50,.07)}
   input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
   input[type=number]{-moz-appearance:textfield;appearance:textfield}
-  #pin-lock-overlay{position:fixed;inset:0;background:rgba(27,42,74,.95);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px)}
-  .pin-card{background:#fff;padding:30px;border-radius:8px;text-align:center;max-width:360px;width:90%;border-top:5px solid var(--accent)}
-  .pin-card h3{margin:0 0 10px;color:var(--primary)}
-  .pin-card input{width:100%;padding:10px;border:1px solid var(--border);border-radius:4px;text-align:center;margin-bottom:15px;letter-spacing:2px}
-  .pin-card button{width:100%;padding:10px;background:var(--primary);color:#fff;border:none;border-radius:4px;font-weight:bold;cursor:pointer}
-  #pin-error-msg{color:#dc3545;font-size:11px;font-weight:bold;margin-top:10px;display:none}
-  .control-bar{background:#eef2f7;border:1px solid var(--border);padding:10px 15px;border-radius:6px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+  #pin-lock-overlay{position:fixed;inset:0;background:rgba(31,45,77,.95);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px)}
+  .pin-card{background:#fff;padding:34px;border-radius:8px;text-align:center;max-width:360px;width:90%;border-top:4px solid var(--accent)}
+  .pin-card h3{margin:0 0 8px;color:var(--primary);font-family:var(--serif);font-weight:400;font-size:18px;letter-spacing:.05em}
+  .pin-card p{color:var(--muted);font-size:11px;margin:0 0 18px}
+  .pin-card input{width:100%;padding:11px;border:1px solid var(--border);border-radius:4px;text-align:center;margin-bottom:14px;letter-spacing:2px}
+  .pin-card button{width:100%;padding:11px;background:var(--primary);color:#fff;border:none;border-radius:4px;font-weight:600;cursor:pointer;font-family:var(--sans);letter-spacing:.03em}
+  #pin-error-msg{color:#b0392f;font-size:11px;font-weight:bold;margin-top:12px;display:none}
+  .control-bar{background:#f7f8fa;border:1px solid var(--border);padding:11px 16px;border-radius:6px;margin-bottom:26px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
   .control-group{display:flex;align-items:center;gap:8px}
-  .control-group label{font-weight:bold;color:var(--primary);font-size:11px}
-  #autosave-status{font-size:11px;color:#28a745;font-weight:bold}
-  .header{display:flex;justify-content:space-between;border-bottom:2px solid var(--accent);padding-bottom:15px;margin-bottom:25px}
-  .brand p{margin:2px 0;color:#555;font-size:11px}
-  .logo-hotel{width:260px;max-height:60px;object-fit:contain;display:block;margin-bottom:8px}
-  .doc-meta{text-align:right}.doc-meta h2{margin:0 0 10px;color:var(--accent);letter-spacing:1px}
-  .meta-row{margin-top:4px;display:flex;align-items:center;justify-content:flex-end;gap:8px}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:25px}
-  .card{background:#fafafa;border:1px solid var(--border);border-radius:6px;padding:15px}
-  .card h3{margin:0 0 12px;font-size:12px;color:var(--primary);border-bottom:1px solid #eee;padding-bottom:5px}
-  .field-group{margin-bottom:8px;display:flex;align-items:center}
-  .field-group label{width:130px;font-weight:600;font-size:11px;color:#555}
-  .field-group input,.field-group select{flex:1;padding:5px 8px;border:1px solid var(--border);border-radius:4px;font-size:12px}
-  .section-header{background:#eef2f7;color:var(--primary);font-weight:bold;font-size:12px;padding:8px 10px;border-left:4px solid var(--accent);margin:20px 0 8px;display:flex;justify-content:space-between;align-items:center}
-  table{width:100%;border-collapse:collapse;margin-bottom:10px}
+  .control-group label{font-weight:600;color:var(--primary);font-size:11px}
+  #autosave-status{font-size:11px;color:#3f8f5f;font-weight:600}
+  .header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:30px;position:relative}
+  .header::after{content:"";position:absolute;left:0;bottom:-1px;width:70px;height:2px;background:var(--accent)}
+  .brand p{margin:3px 0;color:var(--muted);font-size:11px;line-height:1.5}
+  .brand p strong{color:var(--primary)}
+  .logo-hotel{width:250px;max-height:58px;object-fit:contain;display:block;margin-bottom:10px}
+  .doc-meta{text-align:right}
+  .doc-meta h2{font-family:var(--serif);font-weight:400;font-size:27px;color:var(--primary);letter-spacing:.14em;margin:0 0 16px}
+  .meta-row{margin-top:5px;display:flex;align-items:center;justify-content:flex-end;gap:8px}
+  .meta-row label{font-size:11px;color:var(--muted)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-bottom:28px}
+  .card{background:#fff;border:1px solid var(--border);border-radius:6px;padding:18px 20px}
+  .card h3{margin:0 0 14px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--primary);border-bottom:1px solid var(--line);padding-bottom:9px;font-weight:700}
+  .field-group{margin-bottom:9px;display:flex;align-items:center}
+  .field-group label{width:135px;font-weight:500;font-size:11px;color:var(--muted)}
+  .field-group input,.field-group select{flex:1;padding:6px 8px;border:1px solid var(--border);border-radius:4px;font-size:12px;font-family:var(--sans);color:var(--text)}
+  .section-header{background:#f4f5f7;color:var(--primary);font-weight:700;font-size:11px;letter-spacing:.04em;text-transform:uppercase;padding:10px 12px;border-left:3px solid var(--accent);margin:26px 0 10px;display:flex;justify-content:space-between;align-items:center}
+  table{width:100%;border-collapse:collapse;margin-bottom:12px}
   table.grid-table{table-layout:fixed}
-  th{background:var(--primary);color:#fff;padding:10px 8px;text-align:left;font-size:11.5px}
-  td{padding:8px 6px;border-bottom:1px solid #eee;vertical-align:middle}
-  input[type=text],input[type=number],input[type=date],select{width:100%;padding:6px;border:1px solid var(--border);border-radius:4px;font-size:12px}
+  th{background:#f7f8fa;color:var(--primary);padding:11px 8px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;border-bottom:2px solid var(--primary)}
+  td{padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+  input[type=text],input[type=number],input[type=date],select{width:100%;padding:6px 7px;border:1px solid var(--border);border-radius:4px;font-size:12px;font-family:var(--sans);color:var(--text);background:#fff}
   .date-range-cell{display:flex;gap:4px;align-items:center;justify-content:center}
   .date-range-cell input[type=date]{flex:1;min-width:0;font-size:11px;padding:2px 3px;text-align:center;height:24px}
-  .subtotal{white-space:nowrap}
-  .btn{padding:5px 12px;border:none;border-radius:4px;cursor:pointer;font-weight:600;font-size:11px}
-  .btn-add{background:#28a745;color:#fff}.btn-save{background:#007bff;color:#fff}
-  .btn-remove{background:#dc3545;color:#fff;padding:3px 7px;font-size:11px}
-  .btn-revert{background:#6c757d;color:#fff;padding:3px 6px;border:none;border-radius:4px;cursor:pointer}
-  .btn-print{background:var(--primary);color:#fff;font-size:13px;padding:8px 18px}
-  .btn-print:disabled{background:#94a3b8;cursor:not-allowed}
+  .subtotal{white-space:nowrap;color:var(--primary)}
+  .btn{padding:6px 13px;border:none;border-radius:4px;cursor:pointer;font-weight:600;font-size:11px;font-family:var(--sans);letter-spacing:.02em}
+  .btn-add{background:var(--primary);color:#fff}
+  .btn-save{background:#fff;color:var(--primary);border:1px solid var(--border)}
+  .btn-remove{background:transparent;color:#b0392f;padding:3px 8px;font-size:11px;border:1px solid transparent}
+  .btn-remove:hover{border-color:#e8c9c5}
+  .btn-revert{background:#f2f3f5;color:var(--muted);padding:3px 7px;border:none;border-radius:4px;cursor:pointer}
+  .btn-print{background:var(--primary);color:#fff;font-size:12px;padding:10px 22px;letter-spacing:.05em}
+  .btn-print:disabled{background:#9aa3b2;cursor:not-allowed}
   .custom-concept-wrap{display:flex;gap:4px}.custom-concept-wrap input{flex:1}
-  .tax-card{background:#f0f4f8;border:1px solid #b8cce4;padding:12px;border-radius:6px;margin:25px 0 15px;font-size:11px}
-  .tax-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
-  .summary-block{display:grid;grid-template-columns:1fr 360px;gap:20px;margin:20px 0 25px}
-  .payment-schedule{background:#fdfcf7;border:1px solid #f0e6d2;padding:12px;border-radius:6px}
-  .payment-schedule h4{margin:0 0 12px;font-size:12px;color:var(--primary);display:flex;justify-content:space-between}
-  .payment-row{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:10px;font-size:11px;white-space:nowrap}
+  .tax-card{background:#f8f9fb;border:1px solid var(--border);padding:14px 18px;border-radius:6px;margin:28px 0 18px;font-size:11px}
+  .tax-card h4{margin:0 0 10px;color:var(--primary);font-size:11px;text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;gap:8px}
+  .tax-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:10px}
+  .tax-grid label{display:block;color:var(--muted);margin-bottom:3px}
+  .summary-block{display:grid;grid-template-columns:1fr 380px;gap:22px;margin:24px 0 28px}
+  .payment-schedule{background:#faf9f6;border:1px solid #efe9dc;padding:16px 18px;border-radius:6px}
+  .payment-schedule h4{margin:0 0 14px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--primary);display:flex;justify-content:space-between;align-items:center}
+  .payment-row{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:11px;font-size:11px;white-space:nowrap}
   .payment-left-group{display:flex;align-items:center;gap:4px}
   .payment-row .pay-pct{width:42px;text-align:center}.payment-row .pay-days-input{width:55px;text-align:center}
   .payment-row input[type=date]{width:115px}.payment-row select{width:auto;font-size:10px;padding:2px 4px}
-  .payment-row .val-amount{font-weight:bold;text-align:right;min-width:80px}
-  .payment-row .paid-tag{color:#28a745;font-weight:bold;display:none}
+  .payment-row .val-amount{font-weight:700;text-align:right;min-width:80px;color:var(--primary)}
+  .payment-row .paid-tag{color:#3f8f5f;font-weight:700;display:none}
   .payment-row.is-paid .pay-pct,.payment-row.is-paid .pct-symbol,.payment-row.is-paid .before-text,.payment-row.is-paid .pay-date,.payment-row.is-paid .pay-mode-select,.payment-row.is-paid .pay-days-input,.payment-row.is-paid .chk-paid-wrap{display:none!important}
   .payment-row.is-paid .paid-tag{display:inline}
-  .pct-alert{color:#dc3545;font-size:11px;font-weight:bold;margin-top:8px;display:none;background:#f8d7da;padding:6px;border-radius:4px}
-  .totals-table{width:100%;border-collapse:collapse}.totals-table td{padding:4px 8px;text-align:right}
-  .totals-table td:first-child{text-align:left}.totals-table .grand-total{font-size:15px;font-weight:bold;color:var(--primary);background:#f0f4f8}
-  .cancellation-section{background:#fafafa;border:1px solid var(--border);padding:12px;border-radius:6px;margin-bottom:20px}
-  .cancellation-section h4{margin:0 0 10px;font-size:12px;color:var(--primary);display:flex;justify-content:space-between}
-  .canc-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:11px;white-space:nowrap}
+  .pct-alert{color:#b0392f;font-size:11px;font-weight:600;margin-top:10px;display:none;background:#fbf0ef;padding:7px 10px;border-radius:4px}
+  .totals-table{width:100%;border-collapse:collapse}
+  .totals-table td{padding:6px 8px;text-align:right;font-size:12px}
+  .totals-table td:first-child{text-align:left;color:var(--muted)}
+  .totals-table .grand-total td{border-top:2px solid var(--accent);padding-top:14px;font-family:var(--serif);font-size:20px;color:var(--primary)}
+  .totals-table .grand-total td:first-child{font-size:12px;font-family:var(--sans);text-transform:uppercase;letter-spacing:.05em;color:var(--primary);font-weight:700}
+  .cancellation-section{background:#fff;border:1px solid var(--border);padding:16px 18px;border-radius:6px;margin-bottom:22px}
+  .cancellation-section h4{margin:0 0 12px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--primary);display:flex;justify-content:space-between;align-items:center}
+  .canc-row{display:flex;align-items:center;gap:6px;margin-bottom:7px;font-size:11px;white-space:nowrap;color:var(--text)}
   .canc-row input[type=number]{width:45px;text-align:center}
-  .bank-card{background:#f4f6fa;border:1px solid #d0d7de;border-left:4px solid var(--primary);border-radius:6px;padding:14px 18px;margin-bottom:20px}
-  .bank-card h4{margin:0 0 10px;font-size:12px;color:var(--primary);display:flex;justify-content:space-between}
-  .bank-details-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;background:#fff;padding:10px 14px;border-radius:5px;border:1px solid #e1e4e8;margin-bottom:10px}
-  .bank-item .label{color:#666;font-size:10px;display:block}.bank-item .value{font-weight:bold;color:var(--primary);font-family:monospace}
-  .tpv-details-box{background:#fff;padding:12px 14px;border-radius:5px;border:1px solid #e1e4e8;margin-bottom:10px;display:none}
-  .tpv-print-link{display:none;word-break:break-all;font-size:12px;font-weight:bold;color:#007bff}
-  .bank-notice{font-size:11px;color:#555;margin-bottom:8px}
-  .tax-disclaimer{font-size:11px;color:#555;margin-bottom:8px}
-  .bank-card textarea{width:100%;height:50px;border:1px solid var(--border);border-radius:4px;padding:6px;font-size:11px}
-  .signatures-wrapper{display:grid;grid-template-columns:1fr 1fr;gap:20px;border-top:1px dashed var(--border);padding-top:25px;margin-top:25px}
-  .client-signature-box,.hotel-signature-box{border:1px solid var(--border);border-radius:6px;padding:12px;background:#fafafa}
-  .client-signature-box h4{margin:0 0 8px;font-size:11px;color:var(--primary)}
-  .signature-line-space{height:60px;border-bottom:1px dashed #ccc;margin-top:10px;position:relative}
-  .signature-line-space::after{content:attr(data-sign-label);position:absolute;bottom:2px;right:5px;font-size:10px;color:#999}
+  .bank-card{background:#f8f9fb;border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:6px;padding:16px 20px;margin-bottom:22px}
+  .bank-card h4{margin:0 0 12px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--primary);display:flex;justify-content:space-between;align-items:center}
+  .bank-details-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;background:#fff;padding:12px 16px;border-radius:5px;border:1px solid var(--border);margin-bottom:12px}
+  .bank-item .label{color:var(--muted);font-size:10px;display:block;text-transform:uppercase;letter-spacing:.03em}
+  .bank-item .value{font-weight:700;color:var(--primary);font-family:var(--sans);letter-spacing:.02em}
+  .tpv-details-box{background:#fff;padding:12px 16px;border-radius:5px;border:1px solid var(--border);margin-bottom:12px;display:none}
+  .tpv-details-box label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;display:block;margin-bottom:5px}
+  .tpv-print-link{display:none;word-break:break-all;font-size:12px;font-weight:700;color:var(--primary-soft)}
+  .bank-notice{font-size:11px;color:var(--muted);margin-bottom:8px}
+  .tax-disclaimer{font-size:11px;color:var(--muted);margin-bottom:10px}
+  .bank-card textarea{width:100%;height:52px;border:1px solid var(--border);border-radius:4px;padding:8px;font-size:11px;font-family:var(--sans)}
+  .signatures-wrapper{display:grid;grid-template-columns:1fr 1fr;gap:22px;border-top:1px solid var(--line);padding-top:28px;margin-top:28px}
+  .client-signature-box,.hotel-signature-box{border:1px solid var(--border);border-radius:6px;padding:16px 18px;background:#fff}
+  .client-signature-box h4{margin:0 0 10px;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--primary)}
+  .client-fields p{font-size:11px;color:var(--muted);margin:4px 0}
+  .client-fields p strong{color:var(--primary)}
+  .signature-line-space{height:64px;border-bottom:1px dashed #cdd3db;margin-top:12px;position:relative}
+  .signature-line-space::after{content:attr(data-sign-label);position:absolute;bottom:3px;right:5px;font-size:10px;color:#a7aeb8}
   .hotel-signature-box{display:flex;flex-direction:column;align-items:center;justify-content:center}
-  .contact-person{display:flex;align-items:center;gap:12px;margin-bottom:10px}
-  .avatar-ma{width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)}
-  .contact-info .name{font-weight:bold;color:var(--primary);font-size:13px}
-  .img-sign{height:85px;object-fit:contain;margin:0 auto;display:block}
+  .contact-person{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+  .avatar-ma{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)}
+  .contact-info p{margin:2px 0;font-size:11px;color:var(--muted)}
+  .contact-info .name{font-weight:700;color:var(--primary);font-size:13px;font-family:var(--serif)}
+  .img-sign{height:82px;object-fit:contain;margin:0 auto;display:block}
   .print-text,.print-pay-text{display:none}
   @media print{
     #pin-lock-overlay{display:none!important}
-    body{background:#fff;padding:0}.container{box-shadow:none;padding:0;max-width:100%}
+    body{background:#fff;padding:0;font-size:12px}.container{box-shadow:none;padding:0;max-width:100%}
     .no-print,.control-bar,.btn-remove,.btn-add,.btn-revert,.chk-paid-wrap,.edit-days,#autosave-status{display:none!important}
-    input,select,textarea{border:none!important;background:transparent!important;appearance:none;padding:0!important}
+    input,select,textarea{border:none!important;background:transparent!important;appearance:none;padding:0!important;color:var(--text)!important}
     .header,.grid,.sec-wrapper,.summary-block,.tax-card,.cancellation-section,.bank-card,.signatures-wrapper,tr,.payment-row,.canc-row{page-break-inside:avoid!important}
-    th{background:var(--primary)!important;color:#fff!important;-webkit-print-color-adjust:exact}
-    .section-header{background:#eef2f7!important;-webkit-print-color-adjust:exact}
-    .card,.cancellation-section,.tax-card,.bank-card,.client-signature-box,.hotel-signature-box{border:1px solid #ccc!important}
+    th{background:#f7f8fa!important;color:var(--primary)!important;border-bottom:2px solid var(--primary)!important;-webkit-print-color-adjust:exact}
+    .section-header{background:#f4f5f7!important;color:var(--primary)!important;-webkit-print-color-adjust:exact}
+    .header::after{background:var(--accent)!important;-webkit-print-color-adjust:exact}
+    .card,.cancellation-section,.tax-card,.bank-card,.client-signature-box,.hotel-signature-box{border:1px solid #dfe3e8!important}
     .canc-row .print-text{display:inline!important}
     .pay-mode-select,.pay-days-input,.pay-date{display:none!important}
     .payment-row .print-pay-text{display:inline!important}
@@ -113,13 +136,13 @@
 
 <div id="pin-lock-overlay">
   <div class="pin-card">
-    <h3>🔒 Accés Restringit</h3>
+    <h3>Accés Restringit</h3>
     <p>Hotel SERHS Rivoli Rambla - Barcelona</p>
     <form id="pin-form">
       <input type="password" id="pin-input" placeholder="Introdueix la clau" autofocus>
       <button type="submit">Entrar</button>
     </form>
-    <div id="pin-error-msg">⚠️ Clau incorrecta!</div>
+    <div id="pin-error-msg">Clau incorrecta</div>
   </div>
 </div>
 
@@ -175,7 +198,7 @@
       <div class="field-group"><label data-t="label_dates">Entrada / Sortida:</label>
         <input type="date" data-scope="group" data-field="inDate" style="width:48%">
         <input type="date" data-scope="group" data-field="outDate" style="width:48%;margin-left:2%"></div>
-      <div class="field-group"><label data-t="label_nights">Nits:</label><input type="text" id="nits-num" readonly style="background:#eee;font-weight:bold"></div>
+      <div class="field-group"><label data-t="label_nights">Nits:</label><input type="text" id="nits-num" readonly style="background:#f2f3f5;font-weight:bold"></div>
     </div>
   </div>
 
@@ -213,8 +236,8 @@
     <div class="tax-grid">
       <div><label data-t="tax_pax_label">Persones > 17 anys:</label><input type="number" data-scope="tax" data-field="pax" min="0"></div>
       <div><label data-t="tax_nights_label">Nits (Màx 7):</label><input type="number" data-scope="tax" data-field="nits" min="0" max="7"></div>
-      <div><label data-t="tax_rate_label">Tarifa Nit/Pax:</label><input type="text" id="tax-rate-display" readonly style="background:#eef;font-weight:bold"></div>
-      <div><label data-t="tax_total_label">Total Taxa:</label><input type="text" id="tax-total-display" readonly style="background:#eef;font-weight:bold;color:var(--primary)"></div>
+      <div><label data-t="tax_rate_label">Tarifa Nit/Pax:</label><input type="text" id="tax-rate-display" readonly style="background:#eef1f5;font-weight:bold"></div>
+      <div><label data-t="tax_total_label">Total Taxa:</label><input type="text" id="tax-total-display" readonly style="background:#eef1f5;font-weight:bold;color:var(--primary)"></div>
     </div>
   </div>
 
@@ -223,7 +246,7 @@
       <h4><span data-t="title_payments">Calendari de Dipòsits i Pagaments</span>
         <button class="btn btn-add" data-action="add-payment" data-t="btn_add_deposit">+ Dipòsit</button></h4>
       <div id="payment-rows-container"></div>
-      <div id="pct-alert" class="pct-alert" data-t="pct_alert_msg">⚠️ Els dipòsits superen el 100%!</div>
+      <div id="pct-alert" class="pct-alert" data-t="pct_alert_msg">Els dipòsits superen el 100%!</div>
     </div>
     <div>
       <table class="totals-table">
@@ -231,9 +254,9 @@
         <tr><td data-t="vat_10_label">IVA 10%:</td><td id="iva-10">0.00 €</td></tr>
         <tr><td data-t="base_21_label">Base 21%:</td><td id="base-21">0.00 €</td></tr>
         <tr><td data-t="vat_21_label">IVA 21%:</td><td id="iva-21">0.00 €</td></tr>
-        <tr id="row-taxa-base" style="display:none;color:#555"><td data-t="base_tax_label">Base Taxa:</td><td id="val-taxa-base">0.00 €</td></tr>
-        <tr id="row-taxa-iva" style="display:none;color:#555"><td data-t="vat_tax_label">IVA Taxa:</td><td id="val-taxa-iva">0.00 €</td></tr>
-        <tr class="grand-total"><td><strong data-t="total_proforma_label">TOTAL:</strong></td><td id="total-final"><strong>0.00 €</strong></td></tr>
+        <tr id="row-taxa-base" style="display:none"><td data-t="base_tax_label">Base Taxa:</td><td id="val-taxa-base">0.00 €</td></tr>
+        <tr id="row-taxa-iva" style="display:none"><td data-t="vat_tax_label">IVA Taxa:</td><td id="val-taxa-iva">0.00 €</td></tr>
+        <tr class="grand-total"><td><strong data-t="total_proforma_label">TOTAL</strong></td><td id="total-final"><strong>0.00 €</strong></td></tr>
       </table>
     </div>
   </div>
@@ -245,7 +268,7 @@
   </div>
 
   <div class="bank-card">
-    <h4><span id="bank-title" data-t="bank_title">💳 Dades Bancàries</span>
+    <h4><span id="bank-title" data-t="bank_title">Dades Bancàries</span>
       <select id="payment-type-toggle" class="no-print" data-scope="root" data-field="paymentType" style="font-size:11px">
         <option value="BANK">🏦 Transferència</option><option value="TPV">💳 TPV Virtual</option></select></h4>
     <div id="bank-grid" class="bank-details-grid">
@@ -254,11 +277,11 @@
       <div class="bank-item"><span class="label">SWIFT</span><span class="value">CAIXESBBXXX</span></div>
     </div>
     <div id="tpv-box" class="tpv-details-box">
-      <label data-t="tpv_url_label">🔗 Enllaç de pagament:</label>
+      <label data-t="tpv_url_label">Enllaç de pagament:</label>
       <input type="url" data-scope="root" data-field="tpvUrl" placeholder="https://...">
       <a id="tpv-print-link" href="#" class="tpv-print-link" target="_blank">-</a>
     </div>
-    <div class="bank-notice">📌 <span id="bank-notice-text" data-t="bank_concept_text">Cal indicar el número de proforma.</span></div>
+    <div class="bank-notice"><span id="bank-notice-text" data-t="bank_concept_text">Cal indicar el número de proforma.</span></div>
     <div class="tax-disclaimer" data-t="notes_tax_disclaimer">• Si no està inclosa, la taxa es liquida al check-in.</div>
     <textarea data-scope="root" data-field="notes" placeholder="Observacions..."></textarea>
   </div>
@@ -266,9 +289,11 @@
   <div class="signatures-wrapper">
     <div class="client-signature-box">
       <h4 data-t="client_signature_title">Conformitat del Client</h4>
-      <p><strong data-t="client_company_label">Empresa:</strong> <span id="disp-company">-</span></p>
-      <p><strong data-t="client_nif_label">NIF:</strong> <span id="disp-nif">-</span></p>
-      <p><strong data-t="client_rep_label">Representant:</strong> <span id="disp-name">-</span></p>
+      <div class="client-fields">
+        <p><strong data-t="client_company_label">Empresa:</strong> <span id="disp-company">-</span></p>
+        <p><strong data-t="client_nif_label">NIF:</strong> <span id="disp-nif">-</span></p>
+        <p><strong data-t="client_rep_label">Representant:</strong> <span id="disp-name">-</span></p>
+      </div>
       <div class="signature-line-space" data-sign-label="Signatura i Segell"></div>
     </div>
     <div class="hotel-signature-box">
@@ -280,7 +305,7 @@
     </div>
   </div>
 
-  <div style="margin-top:20px;text-align:right">
+  <div style="margin-top:24px;text-align:right">
     <button id="btn-print" class="btn btn-print" data-action="print" data-t="btn_print">Imprimir / PDF</button>
   </div>
 </div>
@@ -312,7 +337,6 @@ function eur(c){ return (c/100).toFixed(2)+' €'; }
 function fmtFecha(d){ if(!d||isNaN(d)) return 'dd/mm/aaaa'; const p=n=>String(n).padStart(2,'0'); return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear(); }
 const T = () => traducciones[state.lang];
 
-/* --- AUTOGUARDADO EN EL NAVEGADOR (localStorage) --- */
 let _autoT;
 function autoguardar(){
   clearTimeout(_autoT);
@@ -332,10 +356,10 @@ function ajustarUid(){
 }
 
 const traducciones = {
-  ca:{establiment:"Establiment:",rao_social:"Raó Social:",dom_social:"Dom. Social:",tel_hotel:"Tel. Hotel:",tel_reserves:"Tel. Reserves:",email_grups:"Grups:",num_proforma:"Núm:",data_doc:"Data:",title_client:"Dades del Client / Agència",label_company:"Empresa / Agència:",label_nif:"NIF / CIF:",label_contact:"Persona Contacte:",label_email:"Email / Telèfon:",title_group:"Detalls del Grup",label_group_name:"Nom del Grup:",label_pms_ref:"Ref. PMS:",label_dates:"Entrada / Sortida:",label_nights:"Nits:",th_concept:"Concepte / Servei",th_item_dates:"Dates",th_units:"Unitats",th_nights:"Nits/Dies",th_price:"Preu Un. IVA incl. (€)",th_discount:"Desc. (%)",th_vat_type:"Tipus IVA",th_total:"Total (€)",sec_accommodation:"1. ALLOTJAMENT (IVA 10%)",btn_add_room:"+ Afegir Habitació",sec_rooms:"2. SALES I EQUIPAMENTS (IVA 21%)",btn_add_room_eq:"+ Afegir Sala",sec_catering:"3. RESTAURACIÓ I CÀTERING (IVA 10%)",btn_add_catering:"+ Afegir Servei",tax_title:"Taxa Turística (Persones > 17 anys - Barcelona)",tax_pax_label:"Persones > 17 anys:",tax_nights_label:"Nits (Màx 7):",tax_rate_label:"Tarifa Nit/Pax:",tax_total_label:"Total Taxa:",title_payments:"Calendari de Dipòsits i Pagaments",btn_add_deposit:"+ Dipòsit",pct_alert_msg:"⚠️ Els dipòsits superen el 100%!",base_10_label:"Base 10%:",vat_10_label:"IVA 10%:",base_21_label:"Base 21%:",vat_21_label:"IVA 21%:",base_tax_label:"Base Taxa:",vat_tax_label:"IVA Taxa:",total_proforma_label:"TOTAL:",title_cancellation:"Condicions de Cancel·lació",btn_add_cancellation:"+ Tram",bank_title:"💳 Dades Bancàries",bank_title_tpv:"💳 Pagament per Targeta (TPV)",bank_label_bank:"Entitat",bank_concept_text:"Cal indicar el número de proforma en el concepte.",tpv_concept_text:"Podeu pagar amb targeta via plataforma segura.",tpv_url_label:"🔗 Enllaç de pagament:",notes_tax_disclaimer:"• Si no està inclosa, la taxa es liquida al check-in.",client_signature_title:"Conformitat del Client",client_company_label:"Empresa:",client_nif_label:"NIF:",client_rep_label:"Representant:",hotel_dept:"Departament de reserves",btn_print:"Imprimir / PDF",deposit_label:"• Dipòsit:",rest_label:"Resta Pendent:",before_text:"abans del:",paid_text:"Pagat",paid_tag:"(PAGAT)",mode_fixed:"Data Fixa",mode_before_arr:"dies abans d'arribada",mode_after_conf:"dies desprès confirmació",canc_free_1:"• Sense despeses fins al",canc_between:"• Entre el",canc_and_the:"i el",canc_arrival:"i l'arribada:",canc_expenses:"% despeses",canc_e_free:"• Sense despeses fins al",canc_e_days:"dies abans:",canc_e_between:"• Entre el",canc_e_and:"i el",canc_e_days2:"dies abans",canc_e_arrival:"i l'arribada:",canc_e_expenses:"% despeses"},
-  es:{establiment:"Establecimiento:",rao_social:"Razón Social:",dom_social:"Dom. Social:",tel_hotel:"Tel. Hotel:",tel_reserves:"Tel. Reservas:",email_grups:"Grupos:",num_proforma:"Nº:",data_doc:"Fecha:",title_client:"Datos del Cliente",label_company:"Empresa / Agencia:",label_nif:"NIF / CIF:",label_contact:"Persona de Contacto:",label_email:"Email / Teléfono:",title_group:"Detalles del Grupo",label_group_name:"Nombre del Grupo:",label_pms_ref:"Ref. PMS:",label_dates:"Entrada / Salida:",label_nights:"Noches:",th_concept:"Concepto / Servicio",th_item_dates:"Fechas",th_units:"Unidades",th_nights:"Noches/Días",th_price:"Precio Un. IVA incl. (€)",th_discount:"Dto. (%)",th_vat_type:"Tipo IVA",th_total:"Total (€)",sec_accommodation:"1. ALOJAMIENTO (IVA 10%)",btn_add_room:"+ Añadir Habitación",sec_rooms:"2. SALAS (IVA 21%)",btn_add_room_eq:"+ Añadir Sala",sec_catering:"3. RESTAURACIÓN (IVA 10%)",btn_add_catering:"+ Añadir Servicio",tax_title:"Tasa Turística (Personas > 17 años)",tax_pax_label:"Personas > 17 años:",tax_nights_label:"Noches (Máx 7):",tax_rate_label:"Tarifa Noche/Pax:",tax_total_label:"Total Tasa:",title_payments:"Calendario de Depósitos y Pagos",btn_add_deposit:"+ Depósito",pct_alert_msg:"⚠️ ¡Los depósitos superan el 100%!",base_10_label:"Base 10%:",vat_10_label:"IVA 10%:",base_21_label:"Base 21%:",vat_21_label:"IVA 21%:",base_tax_label:"Base Tasa:",vat_tax_label:"IVA Tasa:",total_proforma_label:"TOTAL:",title_cancellation:"Condiciones de Cancelación",btn_add_cancellation:"+ Tramo",bank_title:"💳 Datos Bancarios",bank_title_tpv:"💳 Pago por Tarjeta (TPV)",bank_label_bank:"Entidad",bank_concept_text:"Indicar el número de proforma en el concepto.",tpv_concept_text:"Puede pagar con tarjeta via plataforma segura.",tpv_url_label:"🔗 Enlace de pago:",notes_tax_disclaimer:"• Si no está incluida, la tasa se liquida en el check-in.",client_signature_title:"Conformidad del Cliente",client_company_label:"Empresa:",client_nif_label:"NIF:",client_rep_label:"Representante:",hotel_dept:"Departamento de reservas",btn_print:"Imprimir / PDF",deposit_label:"• Depósito:",rest_label:"Resto Pendiente:",before_text:"antes del:",paid_text:"Pagado",paid_tag:"(PAGADO)",mode_fixed:"Fecha Fija",mode_before_arr:"días antes de llegada",mode_after_conf:"días tras confirmación",canc_free_1:"• Sin gastos hasta el",canc_between:"• Entre el",canc_and_the:"y el",canc_arrival:"y la llegada:",canc_expenses:"% gastos",canc_e_free:"• Sin gastos hasta el",canc_e_days:"días antes:",canc_e_between:"• Entre el",canc_e_and:"y el",canc_e_days2:"días antes",canc_e_arrival:"y la llegada:",canc_e_expenses:"% gastos"},
-  en:{establiment:"Establishment:",rao_social:"Company:",dom_social:"Address:",tel_hotel:"Tel:",tel_reserves:"Reservations:",email_grups:"Groups:",num_proforma:"No:",data_doc:"Date:",title_client:"Client / Agency",label_company:"Company:",label_nif:"VAT / ID:",label_contact:"Contact:",label_email:"Email / Phone:",title_group:"Group / Event",label_group_name:"Group Name:",label_pms_ref:"Booking Ref:",label_dates:"Check-in / Check-out:",label_nights:"Nights:",th_concept:"Concept",th_item_dates:"Dates",th_units:"Units",th_nights:"Nights",th_price:"Unit Price (€)",th_discount:"Disc. (%)",th_vat_type:"VAT",th_total:"Total (€)",sec_accommodation:"1. ACCOMMODATION (10% VAT)",btn_add_room:"+ Add Room",sec_rooms:"2. MEETING ROOMS (21% VAT)",btn_add_room_eq:"+ Add Room",sec_catering:"3. CATERING (10% VAT)",btn_add_catering:"+ Add Service",tax_title:"City Tax (Guests > 17)",tax_pax_label:"Guests > 17:",tax_nights_label:"Nights (Max 7):",tax_rate_label:"Rate Night/Pax:",tax_total_label:"Total Tax:",title_payments:"Deposit & Payment Schedule",btn_add_deposit:"+ Deposit",pct_alert_msg:"⚠️ Deposits exceed 100%!",base_10_label:"Base 10%:",vat_10_label:"VAT 10%:",base_21_label:"Base 21%:",vat_21_label:"VAT 21%:",base_tax_label:"Tax Base:",vat_tax_label:"Tax VAT:",total_proforma_label:"TOTAL:",title_cancellation:"Cancellation Policy",btn_add_cancellation:"+ Term",bank_title:"💳 Bank Details",bank_title_tpv:"💳 Card Payment (POS)",bank_label_bank:"Bank",bank_concept_text:"Please indicate the proforma number.",tpv_concept_text:"Pay by card via secure platform.",tpv_url_label:"🔗 Payment link:",notes_tax_disclaimer:"• If not included, city tax is settled at check-in.",client_signature_title:"Client Approval",client_company_label:"Company:",client_nif_label:"VAT:",client_rep_label:"Representative:",hotel_dept:"Reservations dept.",btn_print:"Print / PDF",deposit_label:"• Deposit:",rest_label:"Remaining:",before_text:"before:",paid_text:"Paid",paid_tag:"(PAID)",mode_fixed:"Fixed Date",mode_before_arr:"days before arrival",mode_after_conf:"days after confirmation",canc_free_1:"• Free until",canc_between:"• Between",canc_and_the:"and",canc_arrival:"and arrival:",canc_expenses:"% fee",canc_e_free:"• Free until",canc_e_days:"days before:",canc_e_between:"• Between",canc_e_and:"and",canc_e_days2:"days before",canc_e_arrival:"and arrival:",canc_e_expenses:"% fee"},
-  fr:{establiment:"Établissement:",rao_social:"Raison Sociale:",dom_social:"Siège:",tel_hotel:"Tél:",tel_reserves:"Réservations:",email_grups:"Groupes:",num_proforma:"N°:",data_doc:"Date:",title_client:"Client / Agence",label_company:"Société:",label_nif:"TVA / NIF:",label_contact:"Contact:",label_email:"Email / Tél:",title_group:"Groupe / Événement",label_group_name:"Nom du Groupe:",label_pms_ref:"Réf. Résa:",label_dates:"Arrivée / Départ:",label_nights:"Nuits:",th_concept:"Concept",th_item_dates:"Dates",th_units:"Unités",th_nights:"Nuits",th_price:"Prix Un. (€)",th_discount:"Rem. (%)",th_vat_type:"TVA",th_total:"Total (€)",sec_accommodation:"1. HÉBERGEMENT (TVA 10%)",btn_add_room:"+ Chambre",sec_rooms:"2. SALLES (TVA 21%)",btn_add_room_eq:"+ Salle",sec_catering:"3. RESTAURATION (TVA 10%)",btn_add_catering:"+ Service",tax_title:"Taxe de Séjour (Personnes > 17)",tax_pax_label:"Personnes > 17:",tax_nights_label:"Nuits (Max 7):",tax_rate_label:"Tarif Nuit/Pax:",tax_total_label:"Total Taxe:",title_payments:"Échéancier des Paiements",btn_add_deposit:"+ Dépôt",pct_alert_msg:"⚠️ Les dépôts dépassent 100%!",base_10_label:"Base 10%:",vat_10_label:"TVA 10%:",base_21_label:"Base 21%:",vat_21_label:"TVA 21%:",base_tax_label:"Base Taxe:",vat_tax_label:"TVA Taxe:",total_proforma_label:"TOTAL:",title_cancellation:"Conditions d'Annulation",btn_add_cancellation:"+ Tranche",bank_title:"💳 Coordonnées Bancaires",bank_title_tpv:"💳 Paiement par Carte (TPE)",bank_label_bank:"Banque",bank_concept_text:"Indiquer le numéro de proforma.",tpv_concept_text:"Paiement par carte via plateforme sécurisée.",tpv_url_label:"🔗 Lien de paiement:",notes_tax_disclaimer:"• Si non incluse, la taxe est réglée au check-in.",client_signature_title:"Accord du Client",client_company_label:"Société:",client_nif_label:"TVA:",client_rep_label:"Représentant:",hotel_dept:"Département réservations",btn_print:"Imprimer / PDF",deposit_label:"• Dépôt:",rest_label:"Reste à Payer:",before_text:"avant le:",paid_text:"Payé",paid_tag:"(PAYÉ)",mode_fixed:"Date Fixe",mode_before_arr:"jours avant l'arrivée",mode_after_conf:"jours après confirmation",canc_free_1:"• Gratuit jusqu'au",canc_between:"• Entre le",canc_and_the:"et le",canc_arrival:"et l'arrivée:",canc_expenses:"% frais",canc_e_free:"• Gratuit jusqu'au",canc_e_days:"jours avant:",canc_e_between:"• Entre le",canc_e_and:"et le",canc_e_days2:"jours avant",canc_e_arrival:"et l'arrivée:",canc_e_expenses:"% frais"}
+  ca:{establiment:"Establiment:",rao_social:"Raó Social:",dom_social:"Dom. Social:",tel_hotel:"Tel. Hotel:",tel_reserves:"Tel. Reserves:",email_grups:"Grups:",num_proforma:"Núm:",data_doc:"Data:",title_client:"Dades del Client / Agència",label_company:"Empresa / Agència:",label_nif:"NIF / CIF:",label_contact:"Persona Contacte:",label_email:"Email / Telèfon:",title_group:"Detalls del Grup",label_group_name:"Nom del Grup:",label_pms_ref:"Ref. PMS:",label_dates:"Entrada / Sortida:",label_nights:"Nits:",th_concept:"Concepte / Servei",th_item_dates:"Dates",th_units:"Unitats",th_nights:"Nits/Dies",th_price:"Preu Un. IVA incl. (€)",th_discount:"Desc. (%)",th_vat_type:"Tipus IVA",th_total:"Total (€)",sec_accommodation:"1. ALLOTJAMENT (IVA 10%)",btn_add_room:"+ Afegir Habitació",sec_rooms:"2. SALES I EQUIPAMENTS (IVA 21%)",btn_add_room_eq:"+ Afegir Sala",sec_catering:"3. RESTAURACIÓ I CÀTERING (IVA 10%)",btn_add_catering:"+ Afegir Servei",tax_title:"Taxa Turística (Persones > 17 anys - Barcelona)",tax_pax_label:"Persones > 17 anys:",tax_nights_label:"Nits (Màx 7):",tax_rate_label:"Tarifa Nit/Pax:",tax_total_label:"Total Taxa:",title_payments:"Calendari de Dipòsits i Pagaments",btn_add_deposit:"+ Dipòsit",pct_alert_msg:"Els dipòsits superen el 100%!",base_10_label:"Base 10%:",vat_10_label:"IVA 10%:",base_21_label:"Base 21%:",vat_21_label:"IVA 21%:",base_tax_label:"Base Taxa:",vat_tax_label:"IVA Taxa:",total_proforma_label:"TOTAL",title_cancellation:"Condicions de Cancel·lació",btn_add_cancellation:"+ Tram",bank_title:"Dades Bancàries",bank_title_tpv:"Pagament per Targeta (TPV)",bank_label_bank:"Entitat",bank_concept_text:"Cal indicar el número de proforma en el concepte.",tpv_concept_text:"Podeu pagar amb targeta via plataforma segura.",tpv_url_label:"Enllaç de pagament:",notes_tax_disclaimer:"• Si no està inclosa, la taxa es liquida al check-in.",client_signature_title:"Conformitat del Client",client_company_label:"Empresa:",client_nif_label:"NIF:",client_rep_label:"Representant:",hotel_dept:"Departament de reserves",btn_print:"Imprimir / PDF",deposit_label:"• Dipòsit:",rest_label:"Resta Pendent:",before_text:"abans del:",paid_text:"Pagat",paid_tag:"(PAGAT)",mode_fixed:"Data Fixa",mode_before_arr:"dies abans d'arribada",mode_after_conf:"dies desprès confirmació",canc_free_1:"• Sense despeses fins al",canc_between:"• Entre el",canc_and_the:"i el",canc_arrival:"i l'arribada:",canc_expenses:"% despeses",canc_e_free:"• Sense despeses fins al",canc_e_days:"dies abans:",canc_e_between:"• Entre el",canc_e_and:"i el",canc_e_days2:"dies abans",canc_e_arrival:"i l'arribada:",canc_e_expenses:"% despeses"},
+  es:{establiment:"Establecimiento:",rao_social:"Razón Social:",dom_social:"Dom. Social:",tel_hotel:"Tel. Hotel:",tel_reserves:"Tel. Reservas:",email_grups:"Grupos:",num_proforma:"Nº:",data_doc:"Fecha:",title_client:"Datos del Cliente",label_company:"Empresa / Agencia:",label_nif:"NIF / CIF:",label_contact:"Persona de Contacto:",label_email:"Email / Teléfono:",title_group:"Detalles del Grupo",label_group_name:"Nombre del Grupo:",label_pms_ref:"Ref. PMS:",label_dates:"Entrada / Salida:",label_nights:"Noches:",th_concept:"Concepto / Servicio",th_item_dates:"Fechas",th_units:"Unidades",th_nights:"Noches/Días",th_price:"Precio Un. IVA incl. (€)",th_discount:"Dto. (%)",th_vat_type:"Tipo IVA",th_total:"Total (€)",sec_accommodation:"1. ALOJAMIENTO (IVA 10%)",btn_add_room:"+ Añadir Habitación",sec_rooms:"2. SALAS (IVA 21%)",btn_add_room_eq:"+ Añadir Sala",sec_catering:"3. RESTAURACIÓN (IVA 10%)",btn_add_catering:"+ Añadir Servicio",tax_title:"Tasa Turística (Personas > 17 años)",tax_pax_label:"Personas > 17 años:",tax_nights_label:"Noches (Máx 7):",tax_rate_label:"Tarifa Noche/Pax:",tax_total_label:"Total Tasa:",title_payments:"Calendario de Depósitos y Pagos",btn_add_deposit:"+ Depósito",pct_alert_msg:"¡Los depósitos superan el 100%!",base_10_label:"Base 10%:",vat_10_label:"IVA 10%:",base_21_label:"Base 21%:",vat_21_label:"IVA 21%:",base_tax_label:"Base Tasa:",vat_tax_label:"IVA Tasa:",total_proforma_label:"TOTAL",title_cancellation:"Condiciones de Cancelación",btn_add_cancellation:"+ Tramo",bank_title:"Datos Bancarios",bank_title_tpv:"Pago por Tarjeta (TPV)",bank_label_bank:"Entidad",bank_concept_text:"Indicar el número de proforma en el concepto.",tpv_concept_text:"Puede pagar con tarjeta via plataforma segura.",tpv_url_label:"Enlace de pago:",notes_tax_disclaimer:"• Si no está incluida, la tasa se liquida en el check-in.",client_signature_title:"Conformidad del Cliente",client_company_label:"Empresa:",client_nif_label:"NIF:",client_rep_label:"Representante:",hotel_dept:"Departamento de reservas",btn_print:"Imprimir / PDF",deposit_label:"• Depósito:",rest_label:"Resto Pendiente:",before_text:"antes del:",paid_text:"Pagado",paid_tag:"(PAGADO)",mode_fixed:"Fecha Fija",mode_before_arr:"días antes de llegada",mode_after_conf:"días tras confirmación",canc_free_1:"• Sin gastos hasta el",canc_between:"• Entre el",canc_and_the:"y el",canc_arrival:"y la llegada:",canc_expenses:"% gastos",canc_e_free:"• Sin gastos hasta el",canc_e_days:"días antes:",canc_e_between:"• Entre el",canc_e_and:"y el",canc_e_days2:"días antes",canc_e_arrival:"y la llegada:",canc_e_expenses:"% gastos"},
+  en:{establiment:"Establishment:",rao_social:"Company:",dom_social:"Address:",tel_hotel:"Tel:",tel_reserves:"Reservations:",email_grups:"Groups:",num_proforma:"No:",data_doc:"Date:",title_client:"Client / Agency",label_company:"Company:",label_nif:"VAT / ID:",label_contact:"Contact:",label_email:"Email / Phone:",title_group:"Group / Event",label_group_name:"Group Name:",label_pms_ref:"Booking Ref:",label_dates:"Check-in / Check-out:",label_nights:"Nights:",th_concept:"Concept",th_item_dates:"Dates",th_units:"Units",th_nights:"Nights",th_price:"Unit Price (€)",th_discount:"Disc. (%)",th_vat_type:"VAT",th_total:"Total (€)",sec_accommodation:"1. ACCOMMODATION (10% VAT)",btn_add_room:"+ Add Room",sec_rooms:"2. MEETING ROOMS (21% VAT)",btn_add_room_eq:"+ Add Room",sec_catering:"3. CATERING (10% VAT)",btn_add_catering:"+ Add Service",tax_title:"City Tax (Guests > 17)",tax_pax_label:"Guests > 17:",tax_nights_label:"Nights (Max 7):",tax_rate_label:"Rate Night/Pax:",tax_total_label:"Total Tax:",title_payments:"Deposit & Payment Schedule",btn_add_deposit:"+ Deposit",pct_alert_msg:"Deposits exceed 100%!",base_10_label:"Base 10%:",vat_10_label:"VAT 10%:",base_21_label:"Base 21%:",vat_21_label:"VAT 21%:",base_tax_label:"Tax Base:",vat_tax_label:"Tax VAT:",total_proforma_label:"TOTAL",title_cancellation:"Cancellation Policy",btn_add_cancellation:"+ Term",bank_title:"Bank Details",bank_title_tpv:"Card Payment (POS)",bank_label_bank:"Bank",bank_concept_text:"Please indicate the proforma number.",tpv_concept_text:"Pay by card via secure platform.",tpv_url_label:"Payment link:",notes_tax_disclaimer:"• If not included, city tax is settled at check-in.",client_signature_title:"Client Approval",client_company_label:"Company:",client_nif_label:"VAT:",client_rep_label:"Representative:",hotel_dept:"Reservations dept.",btn_print:"Print / PDF",deposit_label:"• Deposit:",rest_label:"Remaining:",before_text:"before:",paid_text:"Paid",paid_tag:"(PAID)",mode_fixed:"Fixed Date",mode_before_arr:"days before arrival",mode_after_conf:"days after confirmation",canc_free_1:"• Free until",canc_between:"• Between",canc_and_the:"and",canc_arrival:"and arrival:",canc_expenses:"% fee",canc_e_free:"• Free until",canc_e_days:"days before:",canc_e_between:"• Between",canc_e_and:"and",canc_e_days2:"days before",canc_e_arrival:"and arrival:",canc_e_expenses:"% fee"},
+  fr:{establiment:"Établissement:",rao_social:"Raison Sociale:",dom_social:"Siège:",tel_hotel:"Tél:",tel_reserves:"Réservations:",email_grups:"Groupes:",num_proforma:"N°:",data_doc:"Date:",title_client:"Client / Agence",label_company:"Société:",label_nif:"TVA / NIF:",label_contact:"Contact:",label_email:"Email / Tél:",title_group:"Groupe / Événement",label_group_name:"Nom du Groupe:",label_pms_ref:"Réf. Résa:",label_dates:"Arrivée / Départ:",label_nights:"Nuits:",th_concept:"Concept",th_item_dates:"Dates",th_units:"Unités",th_nights:"Nuits",th_price:"Prix Un. (€)",th_discount:"Rem. (%)",th_vat_type:"TVA",th_total:"Total (€)",sec_accommodation:"1. HÉBERGEMENT (TVA 10%)",btn_add_room:"+ Chambre",sec_rooms:"2. SALLES (TVA 21%)",btn_add_room_eq:"+ Salle",sec_catering:"3. RESTAURATION (TVA 10%)",btn_add_catering:"+ Service",tax_title:"Taxe de Séjour (Personnes > 17)",tax_pax_label:"Personnes > 17:",tax_nights_label:"Nuits (Max 7):",tax_rate_label:"Tarif Nuit/Pax:",tax_total_label:"Total Taxe:",title_payments:"Échéancier des Paiements",btn_add_deposit:"+ Dépôt",pct_alert_msg:"Les dépôts dépassent 100%!",base_10_label:"Base 10%:",vat_10_label:"TVA 10%:",base_21_label:"Base 21%:",vat_21_label:"TVA 21%:",base_tax_label:"Base Taxe:",vat_tax_label:"TVA Taxe:",total_proforma_label:"TOTAL",title_cancellation:"Conditions d'Annulation",btn_add_cancellation:"+ Tranche",bank_title:"Coordonnées Bancaires",bank_title_tpv:"Paiement par Carte (TPE)",bank_label_bank:"Banque",bank_concept_text:"Indiquer le numéro de proforma.",tpv_concept_text:"Paiement par carte via plateforme sécurisée.",tpv_url_label:"Lien de paiement:",notes_tax_disclaimer:"• Si non incluse, la taxe est réglée au check-in.",client_signature_title:"Accord du Client",client_company_label:"Société:",client_nif_label:"TVA:",client_rep_label:"Représentant:",hotel_dept:"Département réservations",btn_print:"Imprimer / PDF",deposit_label:"• Dépôt:",rest_label:"Reste à Payer:",before_text:"avant le:",paid_text:"Payé",paid_tag:"(PAYÉ)",mode_fixed:"Date Fixe",mode_before_arr:"jours avant l'arrivée",mode_after_conf:"jours après confirmation",canc_free_1:"• Gratuit jusqu'au",canc_between:"• Entre le",canc_and_the:"et le",canc_arrival:"et l'arrivée:",canc_expenses:"% frais",canc_e_free:"• Gratuit jusqu'au",canc_e_days:"jours avant:",canc_e_between:"• Entre le",canc_e_and:"et le",canc_e_days2:"jours avant",canc_e_arrival:"et l'arrivée:",canc_e_expenses:"% frais"}
 };
 
 const opciones = {
@@ -378,7 +402,7 @@ function renderItems(){
       <td class="desc-cell" data-desc-zero="${it.desc?0:1}"><input type="number" data-scope="item" data-id="${it.id}" data-field="desc" value="${it.desc}" min="0" max="100" style="text-align:center"></td>
       <td><select data-scope="item" data-id="${it.id}" data-field="iva">${ivaOpt(10)}${ivaOpt(21)}<option value="0" ${it.iva===0?'selected':''}>0% IVA</option></select></td>
       <td class="subtotal" data-subtotal="${it.id}" style="text-align:right;font-weight:600">0.00 €</td>
-      <td class="no-print"><button class="btn-remove" data-action="remove-item" data-id="${it.id}">X</button></td>`;
+      <td class="no-print"><button class="btn-remove" data-action="remove-item" data-id="${it.id}">✕</button></td>`;
     cont.appendChild(tr);
     pintarFechaFila(it.id);
   });
@@ -414,12 +438,12 @@ function renderPayments(){
       <span class="chk-paid-wrap"><input type="checkbox" data-scope="payment" data-id="${p.id}" data-field="paid" ${p.paid?'checked':''}> ${t.paid_text}</span>
       <span class="paid-tag">${t.paid_tag}</span>`;
     if(p.isFinal){
-      div.innerHTML = `<div class="payment-left-group"><span class="label-dep" style="font-weight:bold">${t.rest_label}</span><span class="before-text">${t.before_text}</span>${campos}</div><span class="val-amount">0.00 €</span>`;
+      div.innerHTML = `<div class="payment-left-group"><span class="label-dep" style="font-weight:700">${t.rest_label}</span><span class="before-text">${t.before_text}</span>${campos}</div><span class="val-amount">0.00 €</span>`;
     } else {
       div.innerHTML = `<div class="payment-left-group"><span class="label-dep">${t.deposit_label}</span>
         <input type="number" class="pay-pct" data-scope="payment" data-id="${p.id}" data-field="pct" value="${p.pct}" min="0" max="100"><span class="pct-symbol">%</span>
         <span class="before-text">${t.before_text}</span>${campos}</div>
-        <div style="display:flex;align-items:center;gap:8px"><span class="val-amount">0.00 €</span><button class="btn-remove" data-action="remove-payment" data-id="${p.id}">X</button></div>`;
+        <div style="display:flex;align-items:center;gap:8px"><span class="val-amount">0.00 €</span><button class="btn-remove" data-action="remove-payment" data-id="${p.id}">✕</button></div>`;
     }
     cont.appendChild(div);
   });
@@ -433,20 +457,20 @@ function renderCancels(){
     if(c.type==='FREE'){
       div.innerHTML = `<span class="edit-days">${t.canc_e_free}</span>
         <span class="edit-days"><input type="number" data-scope="canc" data-id="${c.id}" data-field="d1" value="${c.d1}" min="1"> ${t.canc_e_days}</span>
-        <span class="print-text"></span><button class="btn-remove" data-action="remove-canc" data-id="${c.id}">X</button>`;
+        <span class="print-text"></span><button class="btn-remove" data-action="remove-canc" data-id="${c.id}">✕</button>`;
     } else if(c.type==='ARRIVAL'){
       div.innerHTML = `<span class="edit-days">${t.canc_e_between}</span>
         <span class="edit-days"><input type="number" data-scope="canc" data-id="${c.id}" data-field="d1" value="${c.d1}" min="1"> ${t.canc_e_days2}</span>
         <span class="print-text"></span>
         <span class="edit-days">${t.canc_e_arrival} <input type="number" data-scope="canc" data-id="${c.id}" data-field="pct" value="${c.pct}" min="0" max="100">${t.canc_e_expenses}</span>
-        <button class="btn-remove" data-action="remove-canc" data-id="${c.id}">X</button>`;
+        <button class="btn-remove" data-action="remove-canc" data-id="${c.id}">✕</button>`;
     } else {
       div.innerHTML = `<span class="edit-days">${t.canc_e_between}</span>
         <span class="edit-days"><input type="number" data-scope="canc" data-id="${c.id}" data-field="d1" value="${c.d1}" min="1"> ${t.canc_e_and}</span>
         <span class="edit-days"><input type="number" data-scope="canc" data-id="${c.id}" data-field="d2" value="${c.d2}" min="0"> ${t.canc_e_days}</span>
         <span class="print-text"></span>
         <span class="edit-days"><input type="number" data-scope="canc" data-id="${c.id}" data-field="pct" value="${c.pct}" min="0" max="100">${t.canc_e_expenses}</span>
-        <button class="btn-remove" data-action="remove-canc" data-id="${c.id}">X</button>`;
+        <button class="btn-remove" data-action="remove-canc" data-id="${c.id}">✕</button>`;
     }
     cont.appendChild(div);
   });
