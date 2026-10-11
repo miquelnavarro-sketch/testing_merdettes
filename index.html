@@ -1,11 +1,119 @@
-
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proforma Grups - Hotel SERHS Rivoli Rambla</title>
+<style>
+  :root{--primary:#1b2a4a;--accent:#c5a059;--bg:#f4f6f8;--border:#dcdfe6;--text:#2c3e50}
+  *{box-sizing:border-box;font-family:Arial,Helvetica,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+  body{background:var(--bg);color:var(--text);margin:0;padding:20px;font-size:13px}
+  .container{max-width:1250px;margin:0 auto;background:#fff;padding:35px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.08)}
+  input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  input[type=number]{-moz-appearance:textfield;appearance:textfield}
+  #pin-lock-overlay{position:fixed;inset:0;background:rgba(27,42,74,.95);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(5px)}
+  .pin-card{background:#fff;padding:30px;border-radius:8px;text-align:center;max-width:360px;width:90%;border-top:5px solid var(--accent)}
+  .pin-card h3{margin:0 0 10px;color:var(--primary)}
+  .pin-card input{width:100%;padding:10px;border:1px solid var(--border);border-radius:4px;text-align:center;margin-bottom:15px;letter-spacing:2px}
+  .pin-card button{width:100%;padding:10px;background:var(--primary);color:#fff;border:none;border-radius:4px;font-weight:bold;cursor:pointer}
+  #pin-error-msg{color:#dc3545;font-size:11px;font-weight:bold;margin-top:10px;display:none}
+  .control-bar{background:#eef2f7;border:1px solid var(--border);padding:10px 15px;border-radius:6px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+  .control-group{display:flex;align-items:center;gap:8px}
+  .control-group label{font-weight:bold;color:var(--primary);font-size:11px}
+  .header{display:flex;justify-content:space-between;border-bottom:2px solid var(--accent);padding-bottom:15px;margin-bottom:25px}
+  .brand p{margin:2px 0;color:#555;font-size:11px}
+  .logo-hotel{width:260px;max-height:60px;object-fit:contain;display:block;margin-bottom:8px}
+  .doc-meta{text-align:right}.doc-meta h2{margin:0 0 10px;color:var(--accent);letter-spacing:1px}
+  .meta-row{margin-top:4px;display:flex;align-items:center;justify-content:flex-end;gap:8px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:25px}
+  .card{background:#fafafa;border:1px solid var(--border);border-radius:6px;padding:15px}
+  .card h3{margin:0 0 12px;font-size:12px;color:var(--primary);border-bottom:1px solid #eee;padding-bottom:5px}
+  .field-group{margin-bottom:8px;display:flex;align-items:center}
+  .field-group label{width:130px;font-weight:600;font-size:11px;color:#555}
+  .field-group input,.field-group select{flex:1;padding:5px 8px;border:1px solid var(--border);border-radius:4px;font-size:12px}
+  .section-header{background:#eef2f7;color:var(--primary);font-weight:bold;font-size:12px;padding:8px 10px;border-left:4px solid var(--accent);margin:20px 0 8px;display:flex;justify-content:space-between;align-items:center}
+  table{width:100%;border-collapse:collapse;margin-bottom:10px}
+  th{background:var(--primary);color:#fff;padding:10px 8px;text-align:left;font-size:11.5px}
+  td{padding:8px 6px;border-bottom:1px solid #eee;vertical-align:middle}
+  input[type=text],input[type=number],input[type=date],select{width:100%;padding:6px;border:1px solid var(--border);border-radius:4px;font-size:12px}
+  .date-range-cell{display:inline-flex;gap:4px;align-items:center;justify-content:center;min-width:210px}
+  .date-range-cell input[type=date]{font-size:11px;padding:2px 3px;min-width:95px;text-align:center;height:24px}
+  .btn{padding:5px 12px;border:none;border-radius:4px;cursor:pointer;font-weight:600;font-size:11px}
+  .btn-add{background:#28a745;color:#fff}.btn-save{background:#007bff;color:#fff}
+  .btn-remove{background:#dc3545;color:#fff;padding:3px 7px;font-size:11px}
+  .btn-revert{background:#6c757d;color:#fff;padding:3px 6px;border:none;border-radius:4px;cursor:pointer}
+  .btn-print{background:var(--primary);color:#fff;font-size:13px;padding:8px 18px}
+  .btn-print:disabled{background:#94a3b8;cursor:not-allowed}
+  .custom-concept-wrap{display:flex;gap:4px}.custom-concept-wrap input{flex:1}
+  .tax-card{background:#f0f4f8;border:1px solid #b8cce4;padding:12px;border-radius:6px;margin:25px 0 15px;font-size:11px}
+  .tax-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:8px}
+  .summary-block{display:grid;grid-template-columns:1fr 360px;gap:20px;margin:20px 0 25px}
+  .payment-schedule{background:#fdfcf7;border:1px solid #f0e6d2;padding:12px;border-radius:6px}
+  .payment-schedule h4{margin:0 0 12px;font-size:12px;color:var(--primary);display:flex;justify-content:space-between}
+  .payment-row{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:10px;font-size:11px;white-space:nowrap}
+  .payment-left-group{display:flex;align-items:center;gap:4px}
+  .payment-row .pay-pct{width:42px;text-align:center}.payment-row .pay-days-input{width:55px;text-align:center}
+  .payment-row input[type=date]{width:115px}.payment-row select{width:auto;font-size:10px;padding:2px 4px}
+  .payment-row .val-amount{font-weight:bold;text-align:right;min-width:80px}
+  .payment-row .paid-tag{color:#28a745;font-weight:bold;display:none}
+  .payment-row.is-paid .pay-pct,.payment-row.is-paid .pct-symbol,.payment-row.is-paid .before-text,.payment-row.is-paid .pay-date,.payment-row.is-paid .pay-mode-select,.payment-row.is-paid .pay-days-input,.payment-row.is-paid .chk-paid-wrap{display:none!important}
+  .payment-row.is-paid .paid-tag{display:inline}
+  .pct-alert{color:#dc3545;font-size:11px;font-weight:bold;margin-top:8px;display:none;background:#f8d7da;padding:6px;border-radius:4px}
+  .totals-table{width:100%;border-collapse:collapse}.totals-table td{padding:4px 8px;text-align:right}
+  .totals-table td:first-child{text-align:left}.totals-table .grand-total{font-size:15px;font-weight:bold;color:var(--primary);background:#f0f4f8}
+  .cancellation-section{background:#fafafa;border:1px solid var(--border);padding:12px;border-radius:6px;margin-bottom:20px}
+  .cancellation-section h4{margin:0 0 10px;font-size:12px;color:var(--primary);display:flex;justify-content:space-between}
+  .canc-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:11px;white-space:nowrap}
+  .canc-row input[type=number]{width:45px;text-align:center}
+  .bank-card{background:#f4f6fa;border:1px solid #d0d7de;border-left:4px solid var(--primary);border-radius:6px;padding:14px 18px;margin-bottom:20px}
+  .bank-card h4{margin:0 0 10px;font-size:12px;color:var(--primary);display:flex;justify-content:space-between}
+  .bank-details-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;background:#fff;padding:10px 14px;border-radius:5px;border:1px solid #e1e4e8;margin-bottom:10px}
+  .bank-item .label{color:#666;font-size:10px;display:block}.bank-item .value{font-weight:bold;color:var(--primary);font-family:monospace}
+  .tpv-details-box{background:#fff;padding:12px 14px;border-radius:5px;border:1px solid #e1e4e8;margin-bottom:10px;display:none}
+  .tpv-print-link{display:none;word-break:break-all;font-size:12px;font-weight:bold;color:#007bff}
+  .bank-notice{font-size:11px;color:#555;margin-bottom:8px}
+  .tax-disclaimer{font-size:11px;color:#555;margin-bottom:8px}
+  .bank-card textarea{width:100%;height:50px;border:1px solid var(--border);border-radius:4px;padding:6px;font-size:11px}
+  .signatures-wrapper{display:grid;grid-template-columns:1fr 1fr;gap:20px;border-top:1px dashed var(--border);padding-top:25px;margin-top:25px}
+  .client-signature-box,.hotel-signature-box{border:1px solid var(--border);border-radius:6px;padding:12px;background:#fafafa}
+  .client-signature-box h4{margin:0 0 8px;font-size:11px;color:var(--primary)}
+  .signature-line-space{height:60px;border-bottom:1px dashed #ccc;margin-top:10px;position:relative}
+  .signature-line-space::after{content:attr(data-sign-label);position:absolute;bottom:2px;right:5px;font-size:10px;color:#999}
+  .hotel-signature-box{display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .contact-person{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+  .avatar-ma{width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--accent)}
+  .contact-info .name{font-weight:bold;color:var(--primary);font-size:13px}
+  .img-sign{height:85px;object-fit:contain;margin:0 auto;display:block}
+  .print-text,.print-pay-text{display:none}
+  @media print{
+    #pin-lock-overlay{display:none!important}
+    body{background:#fff;padding:0}.container{box-shadow:none;padding:0;max-width:100%}
+    .no-print,.control-bar,.btn-remove,.btn-add,.btn-revert,.chk-paid-wrap,.edit-days{display:none!important}
+    input,select,textarea{border:none!important;background:transparent!important;appearance:none;padding:0!important}
+    .header,.grid,.sec-wrapper,.summary-block,.tax-card,.cancellation-section,.bank-card,.signatures-wrapper,tr,.payment-row,.canc-row{page-break-inside:avoid!important}
+    th{background:var(--primary)!important;color:#fff!important;-webkit-print-color-adjust:exact}
+    .section-header{background:#eef2f7!important;-webkit-print-color-adjust:exact}
+    .card,.cancellation-section,.tax-card,.bank-card,.client-signature-box,.hotel-signature-box{border:1px solid #ccc!important}
+    .canc-row .print-text{display:inline!important}
+    .pay-mode-select,.pay-days-input,.pay-date{display:none!important}
+    .payment-row .print-pay-text{display:inline!important}
+    .date-range-cell input,.date-range-cell span{display:none!important}
+    .date-range-cell::after{content:attr(data-date-formatted);font-size:11px;display:block;text-align:center;width:100%}
+    .desc-cell[data-desc-zero=true] input{display:none!important}
+    .tax-card:not(.has-tax-active){display:none!important}
+    .sec-wrapper:has(tbody:empty){display:none!important}
+    .tpv-details-box input{display:none!important}.tpv-print-link{display:inline!important}
+  }
+</style>
+</head>
+<body>
 
 <div id="pin-lock-overlay">
   <div class="pin-card">
     <h3>🔒 Accés Restringit</h3>
     <p>Hotel SERHS Rivoli Rambla - Barcelona</p>
     <form id="pin-form">
-      <input type="password" id="pin-input" placeholder="Introdueix la clau">
+      <input type="password" id="pin-input" placeholder="Introdueix la clau" autofocus>
       <button type="submit">Entrar</button>
     </form>
     <div id="pin-error-msg">⚠️ Clau incorrecta!</div>
@@ -23,7 +131,7 @@
       <button class="btn btn-add" data-action="new">+ Nova Proforma</button>
       <button class="btn btn-save" data-action="save">💾 Desar a Google Sheets</button>
       <label for="lang-select" style="margin-left:10px">🌐 Idioma:</label>
-      <select id="lang-select" data-action="lang" style="width:100px">
+      <select id="lang-select" style="width:100px">
         <option value="ca">Català</option><option value="es">Español</option>
         <option value="en">English</option><option value="fr">Français</option>
       </select>
@@ -63,7 +171,7 @@
       <div class="field-group"><label data-t="label_dates">Entrada / Sortida:</label>
         <input type="date" data-scope="group" data-field="inDate" style="width:48%">
         <input type="date" data-scope="group" data-field="outDate" style="width:48%;margin-left:2%"></div>
-      <div class="field-group"><label data-t="label_nights">Nits:</label><input type="text" id="nits-num" readonly="" style="background:#eee;font-weight:bold"></div>
+      <div class="field-group"><label data-t="label_nights">Nits:</label><input type="text" id="nits-num" readonly style="background:#eee;font-weight:bold"></div>
     </div>
   </div>
 
@@ -97,12 +205,12 @@
 
   <div class="tax-card" id="tax-card">
     <h4><input type="checkbox" data-scope="tax" data-field="enabled" style="width:16px;height:16px">
-      <span data-t="tax_title">Taxa Turística (Persones &gt; 17 anys - Barcelona)</span></h4>
+      <span data-t="tax_title">Taxa Turística (Persones > 17 anys - Barcelona)</span></h4>
     <div class="tax-grid">
-      <div><label data-t="tax_pax_label">Persones &gt; 17 anys:</label><input type="number" data-scope="tax" data-field="pax" min="0"></div>
+      <div><label data-t="tax_pax_label">Persones > 17 anys:</label><input type="number" data-scope="tax" data-field="pax" min="0"></div>
       <div><label data-t="tax_nights_label">Nits (Màx 7):</label><input type="number" data-scope="tax" data-field="nits" min="0" max="7"></div>
-      <div><label data-t="tax_rate_label">Tarifa Nit/Pax:</label><input type="text" id="tax-rate-display" readonly="" style="background:#eef;font-weight:bold"></div>
-      <div><label data-t="tax_total_label">Total Taxa:</label><input type="text" id="tax-total-display" readonly="" style="background:#eef;font-weight:bold;color:var(--primary)"></div>
+      <div><label data-t="tax_rate_label">Tarifa Nit/Pax:</label><input type="text" id="tax-rate-display" readonly style="background:#eef;font-weight:bold"></div>
+      <div><label data-t="tax_total_label">Total Taxa:</label><input type="text" id="tax-total-display" readonly style="background:#eef;font-weight:bold;color:var(--primary)"></div>
     </div>
   </div>
 
@@ -115,14 +223,14 @@
     </div>
     <div>
       <table class="totals-table">
-        <tbody><tr><td data-t="base_10_label">Base 10%:</td><td id="base-10">0.00 €</td></tr>
+        <tr><td data-t="base_10_label">Base 10%:</td><td id="base-10">0.00 €</td></tr>
         <tr><td data-t="vat_10_label">IVA 10%:</td><td id="iva-10">0.00 €</td></tr>
         <tr><td data-t="base_21_label">Base 21%:</td><td id="base-21">0.00 €</td></tr>
         <tr><td data-t="vat_21_label">IVA 21%:</td><td id="iva-21">0.00 €</td></tr>
         <tr id="row-taxa-base" style="display:none;color:#555"><td data-t="base_tax_label">Base Taxa:</td><td id="val-taxa-base">0.00 €</td></tr>
         <tr id="row-taxa-iva" style="display:none;color:#555"><td data-t="vat_tax_label">IVA Taxa:</td><td id="val-taxa-iva">0.00 €</td></tr>
         <tr class="grand-total"><td><strong data-t="total_proforma_label">TOTAL:</strong></td><td id="total-final"><strong>0.00 €</strong></td></tr>
-      </tbody></table>
+      </table>
     </div>
   </div>
 
@@ -144,7 +252,7 @@
     <div id="tpv-box" class="tpv-details-box">
       <label data-t="tpv_url_label">🔗 Enllaç de pagament:</label>
       <input type="url" data-scope="root" data-field="tpvUrl" placeholder="https://...">
-      <a id="tpv-print-link" href="#" class="tpv-print-link">-</a>
+      <a id="tpv-print-link" href="#" class="tpv-print-link" target="_blank">-</a>
     </div>
     <div class="bank-notice">📌 <span id="bank-notice-text" data-t="bank_concept_text">Cal indicar el número de proforma.</span></div>
     <div class="tax-disclaimer" data-t="notes_tax_disclaimer">• Si no està inclosa, la taxa es liquida al check-in.</div>
@@ -173,5 +281,396 @@
   </div>
 </div>
 
+<script>
+const HOTEL_CODE = "Rivoli";
+const CORRECT_PIN = "Rivoli2026@";
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbxBttPfxYrXB2jWMqArZA5PvnOsXZOGyja7kWATUeeayZILlU94cKsE-vd61vS6mEV1xg/exec";
 
+let uid = 0;
+const nuevoId = () => 'x' + (++uid);
 
+function estadoVacio() {
+  return {
+    num: '', docDate: hoyISO(), lang: 'ca',
+    client: { company:'', nif:'', name:'', email:'' },
+    group:  { name:'', pmsRef:'', inDate:'', outDate:'' },
+    items: [], payments: [], cancellations: [],
+    tax: { enabled:false, pax:0, nits:0 },
+    paymentType: 'BANK', tpvUrl: '', notes: ''
+  };
+}
+let state = estadoVacio();
+
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function hoyISO(){ const d=new Date(); return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10); }
+function eur(c){ return (c/100).toFixed(2)+' €'; }
+function fmtFecha(d){ if(!d||isNaN(d)) return 'dd/mm/aaaa'; const p=n=>String(n).padStart(2,'0'); return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear(); }
+const T = () => traducciones[state.lang];
+
+const traducciones = {
+  ca:{establiment:"Establiment:",rao_social:"Raó Social:",dom_social:"Dom. Social:",tel_hotel:"Tel. Hotel:",tel_reserves:"Tel. Reserves:",email_grups:"Grups:",num_proforma:"Núm:",data_doc:"Data:",title_client:"Dades del Client / Agència",label_company:"Empresa / Agència:",label_nif:"NIF / CIF:",label_contact:"Persona Contacte:",label_email:"Email / Telèfon:",title_group:"Detalls del Grup",label_group_name:"Nom del Grup:",label_pms_ref:"Ref. PMS:",label_dates:"Entrada / Sortida:",label_nights:"Nits:",th_concept:"Concepte / Servei",th_item_dates:"Dates",th_units:"Unitats",th_nights:"Nits/Dies",th_price:"Preu Un. IVA incl. (€)",th_discount:"Desc. (%)",th_vat_type:"Tipus IVA",th_total:"Total (€)",sec_accommodation:"1. ALLOTJAMENT (IVA 10%)",btn_add_room:"+ Afegir Habitació",sec_rooms:"2. SALES I EQUIPAMENTS (IVA 21%)",btn_add_room_eq:"+ Afegir Sala",sec_catering:"3. RESTAURACIÓ I CÀTERING (IVA 10%)",btn_add_catering:"+ Afegir Servei",tax_title:"Taxa Turística (Persones > 17 anys - Barcelona)",tax_pax_label:"Persones > 17 anys:",tax_nights_label:"Nits (Màx 7):",tax_rate_label:"Tarifa Nit/Pax:",tax_total_label:"Total Taxa:",title_payments:"Calendari de Dipòsits i Pagaments",btn_add_deposit:"+ Dipòsit",pct_alert_msg:"⚠️ Els dipòsits superen el 100%!",base_10_label:"Base 10%:",vat_10_label:"IVA 10%:",base_21_label:"Base 21%:",vat_21_label:"IVA 21%:",base_tax_label:"Base Taxa:",vat_tax_label:"IVA Taxa:",total_proforma_label:"TOTAL:",title_cancellation:"Condicions de Cancel·lació",btn_add_cancellation:"+ Tram",bank_title:"💳 Dades Bancàries",bank_title_tpv:"💳 Pagament per Targeta (TPV)",bank_label_bank:"Entitat",bank_concept_text:"Cal indicar el número de proforma en el concepte.",tpv_concept_text:"Podeu pagar amb targeta via plataforma segura.",tpv_url_label:"🔗 Enllaç de pagament:",notes_tax_disclaimer:"• Si no està inclosa, la taxa es liquida al check-in.",client_signature_title:"Conformitat del Client",client_company_label:"Empresa:",client_nif_label:"NIF:",client_rep_label:"Representant:",hotel_dept:"Departament de reserves",btn_print:"Imprimir / PDF",deposit_label:"• Dipòsit:",rest_label:"Resta Pendent:",before_text:"abans del:",paid_text:"Pagat",paid_tag:"(PAGAT)",mode_fixed:"Data Fixa",mode_before_arr:"dies abans d'arribada",mode_after_conf:"dies desprès confirmació",canc_free_1:"• Sense despeses fins al",canc_between:"• Entre el",canc_and_the:"i el",canc_arrival:"i l'arribada:",canc_expenses:"% despeses",canc_e_free:"• Sense despeses fins al",canc_e_days:"dies abans:",canc_e_between:"• Entre el",canc_e_and:"i el",canc_e_days2:"dies abans",canc_e_arrival:"i l'arribada:",canc_e_expenses:"% despeses"},
+  es:{establiment:"Establecimiento:",rao_social:"Razón Social:",dom_social:"Dom. Social:",tel_hotel:"Tel. Hotel:",tel_reserves:"Tel. Reservas:",email_grups:"Grupos:",num_proforma:"Nº:",data_doc:"Fecha:",title_client:"Datos del Cliente",label_company:"Empresa / Agencia:",label_nif:"NIF / CIF:",label_contact:"Persona de Contacto:",label_email:"Email / Teléfono:",title_group:"Detalles del Grupo",label_group_name:"Nombre del Grupo:",label_pms_ref:"Ref. PMS:",label_dates:"Entrada / Salida:",label_nights:"Noches:",th_concept:"Concepto / Servicio",th_item_dates:"Fechas",th_units:"Unidades",th_nights:"Noches/Días",th_price:"Precio Un. IVA incl. (€)",th_discount:"Dto. (%)",th_vat_type:"Tipo IVA",th_total:"Total (€)",sec_accommodation:"1. ALOJAMIENTO (IVA 10%)",btn_add_room:"+ Añadir Habitación",sec_rooms:"2. SALAS (IVA 21%)",btn_add_room_eq:"+ Añadir Sala",sec_catering:"3. RESTAURACIÓN (IVA 10%)",btn_add_catering:"+ Añadir Servicio",tax_title:"Tasa Turística (Personas > 17 años)",tax_pax_label:"Personas > 17 años:",tax_nights_label:"Noches (Máx 7):",tax_rate_label:"Tarifa Noche/Pax:",tax_total_label:"Total Tasa:",title_payments:"Calendario de Depósitos y Pagos",btn_add_deposit:"+ Depósito",pct_alert_msg:"⚠️ ¡Los depósitos superan el 100%!",base_10_label:"Base 10%:",vat_10_label:"IVA 10%:",base_21_label:"Base 21%:",vat_21_label:"IVA 21%:",base_tax_label:"Base Tasa:",vat_tax_label:"IVA Tasa:",total_proforma_label:"TOTAL:",title_cancellation:"Condiciones de Cancelación",btn_add_cancellation:"+ Tramo",bank_title:"💳 Datos Bancarios",bank_title_tpv:"💳 Pago por Tarjeta (TPV)",bank_label_bank:"Entidad",bank_concept_text:"Indicar el número de proforma en el concepto.",tpv_concept_text:"Puede pagar con tarjeta via plataforma segura.",tpv_url_label:"🔗 Enlace de pago:",notes_tax_disclaimer:"• Si no está incluida, la tasa se liquida en el check-in.",client_signature_title:"Conformidad del Cliente",client_company_label:"Empresa:",client_nif_label:"NIF:",client_rep_label:"Representante:",hotel_dept:"Departamento de reservas",btn_print:"Imprimir / PDF",deposit_label:"• Depósito:",rest_label:"Resto Pendiente:",before_text:"antes del:",paid_text:"Pagado",paid_tag:"(PAGADO)",mode_fixed:"Fecha Fija",mode_before_arr:"días antes de llegada",mode_after_conf:"días tras confirmación",canc_free_1:"• Sin gastos hasta el",canc_between:"• Entre el",canc_and_the:"y el",canc_arrival:"y la llegada:",canc_expenses:"% gastos",canc_e_free:"• Sin gastos hasta el",canc_e_days:"días antes:",canc_e_between:"• Entre el",canc_e_and:"y el",canc_e_days2:"días antes",canc_e_arrival:"y la llegada:",canc_e_expenses:"% gastos"},
+  en:{establiment:"Establishment:",rao_social:"Company:",dom_social:"Address:",tel_hotel:"Tel:",tel_reserves:"Reservations:",email_grups:"Groups:",num_proforma:"No:",data_doc:"Date:",title_client:"Client / Agency",label_company:"Company:",label_nif:"VAT / ID:",label_contact:"Contact:",label_email:"Email / Phone:",title_group:"Group / Event",label_group_name:"Group Name:",label_pms_ref:"Booking Ref:",label_dates:"Check-in / Check-out:",label_nights:"Nights:",th_concept:"Concept",th_item_dates:"Dates",th_units:"Units",th_nights:"Nights",th_price:"Unit Price (€)",th_discount:"Disc. (%)",th_vat_type:"VAT",th_total:"Total (€)",sec_accommodation:"1. ACCOMMODATION (10% VAT)",btn_add_room:"+ Add Room",sec_rooms:"2. MEETING ROOMS (21% VAT)",btn_add_room_eq:"+ Add Room",sec_catering:"3. CATERING (10% VAT)",btn_add_catering:"+ Add Service",tax_title:"City Tax (Guests > 17)",tax_pax_label:"Guests > 17:",tax_nights_label:"Nights (Max 7):",tax_rate_label:"Rate Night/Pax:",tax_total_label:"Total Tax:",title_payments:"Deposit & Payment Schedule",btn_add_deposit:"+ Deposit",pct_alert_msg:"⚠️ Deposits exceed 100%!",base_10_label:"Base 10%:",vat_10_label:"VAT 10%:",base_21_label:"Base 21%:",vat_21_label:"VAT 21%:",base_tax_label:"Tax Base:",vat_tax_label:"Tax VAT:",total_proforma_label:"TOTAL:",title_cancellation:"Cancellation Policy",btn_add_cancellation:"+ Term",bank_title:"💳 Bank Details",bank_title_tpv:"💳 Card Payment (POS)",bank_label_bank:"Bank",bank_concept_text:"Please indicate the proforma number.",tpv_concept_text:"Pay by card via secure platform.",tpv_url_label:"🔗 Payment link:",notes_tax_disclaimer:"• If not included, city tax is settled at check-in.",client_signature_title:"Client Approval",client_company_label:"Company:",client_nif_label:"VAT:",client_rep_label:"Representative:",hotel_dept:"Reservations dept.",btn_print:"Print / PDF",deposit_label:"• Deposit:",rest_label:"Remaining:",before_text:"before:",paid_text:"Paid",paid_tag:"(PAID)",mode_fixed:"Fixed Date",mode_before_arr:"days before arrival",mode_after_conf:"days after confirmation",canc_free_1:"• Free until",canc_between:"• Between",canc_and_the:"and",canc_arrival:"and arrival:",canc_expenses:"% fee",canc_e_free:"• Free until",canc_e_days:"days before:",canc_e_between:"• Between",canc_e_and:"and",canc_e_days2:"days before",canc_e_arrival:"and arrival:",canc_e_expenses:"% fee"},
+  fr:{establiment:"Établissement:",rao_social:"Raison Sociale:",dom_social:"Siège:",tel_hotel:"Tél:",tel_reserves:"Réservations:",email_grups:"Groupes:",num_proforma:"N°:",data_doc:"Date:",title_client:"Client / Agence",label_company:"Société:",label_nif:"TVA / NIF:",label_contact:"Contact:",label_email:"Email / Tél:",title_group:"Groupe / Événement",label_group_name:"Nom du Groupe:",label_pms_ref:"Réf. Résa:",label_dates:"Arrivée / Départ:",label_nights:"Nuits:",th_concept:"Concept",th_item_dates:"Dates",th_units:"Unités",th_nights:"Nuits",th_price:"Prix Un. (€)",th_discount:"Rem. (%)",th_vat_type:"TVA",th_total:"Total (€)",sec_accommodation:"1. HÉBERGEMENT (TVA 10%)",btn_add_room:"+ Chambre",sec_rooms:"2. SALLES (TVA 21%)",btn_add_room_eq:"+ Salle",sec_catering:"3. RESTAURATION (TVA 10%)",btn_add_catering:"+ Service",tax_title:"Taxe de Séjour (Personnes > 17)",tax_pax_label:"Personnes > 17:",tax_nights_label:"Nuits (Max 7):",tax_rate_label:"Tarif Nuit/Pax:",tax_total_label:"Total Taxe:",title_payments:"Échéancier des Paiements",btn_add_deposit:"+ Dépôt",pct_alert_msg:"⚠️ Les dépôts dépassent 100%!",base_10_label:"Base 10%:",vat_10_label:"TVA 10%:",base_21_label:"Base 21%:",vat_21_label:"TVA 21%:",base_tax_label:"Base Taxe:",vat_tax_label:"TVA Taxe:",total_proforma_label:"TOTAL:",title_cancellation:"Conditions d'Annulation",btn_add_cancellation:"+ Tranche",bank_title:"💳 Coordonnées Bancaires",bank_title_tpv:"💳 Paiement par Carte (TPE)",bank_label_bank:"Banque",bank_concept_text:"Indiquer le numéro de proforma.",tpv_concept_text:"Paiement par carte via plateforme sécurisée.",tpv_url_label:"🔗 Lien de paiement:",notes_tax_disclaimer:"• Si non incluse, la taxe est réglée au check-in.",client_signature_title:"Accord du Client",client_company_label:"Société:",client_nif_label:"TVA:",client_rep_label:"Représentant:",hotel_dept:"Département réservations",btn_print:"Imprimer / PDF",deposit_label:"• Dépôt:",rest_label:"Reste à Payer:",before_text:"avant le:",paid_text:"Payé",paid_tag:"(PAYÉ)",mode_fixed:"Date Fixe",mode_before_arr:"jours avant l'arrivée",mode_after_conf:"jours après confirmation",canc_free_1:"• Gratuit jusqu'au",canc_between:"• Entre le",canc_and_the:"et le",canc_arrival:"et l'arrivée:",canc_expenses:"% frais",canc_e_free:"• Gratuit jusqu'au",canc_e_days:"jours avant:",canc_e_between:"• Entre le",canc_e_and:"et le",canc_e_days2:"jours avant",canc_e_arrival:"et l'arrivée:",canc_e_expenses:"% frais"}
+};
+
+const opciones = {
+  ca:{ALLOTJAMENT:[["DOBLE/TWIN ÚS DOBLE","DOBLE/TWIN ÚS DOBLE"],["DOBLE/TWIN ÚS INDIVIDUAL","DOBLE/TWIN ÚS INDIVIDUAL"],["TRIPLE","TRIPLE"],["SUPERIOR","SUPERIOR"],["SUITE","SUITE"],["SUPLEMENT HABITACIÓ","SUPLEMENT HABITACIÓ"],["SUPLEMENT MITJA PENSIÓ","SUPLEMENT MITJA PENSIÓ"],["SUPLEMENT PENSIÓ COMPLETA","SUPLEMENT PENSIÓ COMPLETA"],["CUSTOM","ALTRE (escriure...)"]],SALES:[["SALA DE REUNIONS","SALA DE REUNIONS"],["MATERIAL AUDIOVISUAL","MATERIAL AUDIOVISUAL"],["CUSTOM","ALTRE (escriure...)"]],RESTAURACIO:[["COFFEE BREAK","COFFEE BREAK"],["DINAR DE TREBALL","DINAR DE TREBALL"],["CÒCTEL DE BENVINGUDA","CÒCTEL DE BENVINGUDA"],["SOPAR DE GRUP","SOPAR DE GRUP"],["CUSTOM","ALTRE (escriure...)"]]},
+  es:{ALLOTJAMENT:[["DOBLE/TWIN USO DOBLE","DOBLE/TWIN USO DOBLE"],["DOBLE/TWIN USO INDIVIDUAL","DOBLE/TWIN USO INDIVIDUAL"],["TRIPLE","TRIPLE"],["SUPERIOR","SUPERIOR"],["SUITE","SUITE"],["SUPLEMENTO HABITACIÓN","SUPLEMENTO HABITACIÓN"],["SUPLEMENTO MEDIA PENSIÓN","SUPLEMENTO MEDIA PENSIÓN"],["SUPLEMENTO PENSIÓN COMPLETA","SUPLEMENTO PENSIÓN COMPLETA"],["CUSTOM","OTRO (escribir...)"]],SALES:[["SALA DE REUNIÓN","SALA DE REUNIÓN"],["MATERIAL AUDIOVISUAL","MATERIAL AUDIOVISUAL"],["CUSTOM","OTRO (escribir...)"]],RESTAURACIO:[["COFFEE BREAK","COFFEE BREAK"],["ALMUERZO DE TRABAJO","ALMUERZO DE TRABAJO"],["CÓCTEL DE BIENVENIDA","CÓCTEL DE BIENVENIDA"],["CENA DE GRUPO","CENA DE GRUPO"],["CUSTOM","OTRO (escribir...)"]]},
+  en:{ALLOTJAMENT:[["DOUBLE/TWIN DOUBLE USE","DOUBLE/TWIN DOUBLE USE"],["DOUBLE/TWIN SINGLE USE","DOUBLE/TWIN SINGLE USE"],["TRIPLE ROOM","TRIPLE ROOM"],["SUPERIOR ROOM","SUPERIOR ROOM"],["SUITE","SUITE"],["ROOM SUPPLEMENT","ROOM SUPPLEMENT"],["HALF BOARD SUPPLEMENT","HALF BOARD SUPPLEMENT"],["FULL BOARD SUPPLEMENT","FULL BOARD SUPPLEMENT"],["CUSTOM","OTHER (type...)"]],SALES:[["MEETING ROOM","MEETING ROOM"],["AUDIOVISUAL EQUIPMENT","AUDIOVISUAL EQUIPMENT"],["CUSTOM","OTHER (type...)"]],RESTAURACIO:[["COFFEE BREAK","COFFEE BREAK"],["WORKING LUNCH","WORKING LUNCH"],["WELCOME COCKTAIL","WELCOME COCKTAIL"],["GROUP DINNER","GROUP DINNER"],["CUSTOM","OTHER (type...)"]]},
+  fr:{ALLOTJAMENT:[["DOUBLE/TWIN USAGE DOUBLE","DOUBLE/TWIN USAGE DOUBLE"],["DOUBLE/TWIN USAGE INDIVIDUEL","DOUBLE/TWIN USAGE INDIVIDUEL"],["CHAMBRE TRIPLE","CHAMBRE TRIPLE"],["CHAMBRE SUPÉRIEURE","CHAMBRE SUPÉRIEURE"],["SUITE","SUITE"],["SUPPLÉMENT CHAMBRE","SUPPLÉMENT CHAMBRE"],["SUPPLÉMENT DEMI-PENSION","SUPPLÉMENT DEMI-PENSION"],["SUPPLÉMENT PENSION COMPLÈTE","SUPPLÉMENT PENSION COMPLÈTE"],["CUSTOM","AUTRE (saisir...)"]],SALES:[["SALLE DE RÉUNION","SALLE DE RÉUNION"],["MATÉRIEL AUDIOVISUEL","MATÉRIEL AUDIOVISUEL"],["CUSTOM","AUTRE (saisir...)"]],RESTAURACIO:[["PAUSE CAFÉ / COFFEE BREAK","PAUSE CAFÉ / COFFEE BREAK"],["DÉJEUNER DE TRAVAIL","DÉJEUNER DE TRAVAIL"],["COCKTAIL DE BIENVENUE","COCKTAIL DE BIENVENUE"],["DÎNER DE GROUPE","DÎNER DE GROUPE"],["CUSTOM","AUTRE (saisir...)"]]}
+};
+const bodyPorCat = {ALLOTJAMENT:'body-allotjament',SALES:'body-sales',RESTAURACIO:'body-restauracio'};
+const catPorBody = {'body-allotjament':'ALLOTJAMENT','body-sales':'SALES','body-restauracio':'RESTAURACIO'};
+
+function aplicarTextos(){
+  document.documentElement.lang = state.lang;
+  document.querySelectorAll('[data-t]').forEach(el=>{
+    const k = el.getAttribute('data-t');
+    if(T()[k]) el.textContent = T()[k];
+  });
+}
+
+function renderItems(){
+  ['body-allotjament','body-sales','body-restauracio'].forEach(b=>document.getElementById(b).innerHTML='');
+  state.items.forEach(it=>{
+    const cont = document.getElementById(bodyPorCat[it.cat]);
+    const tr = document.createElement('tr');
+    const opts = opciones[state.lang][it.cat];
+    const concepto = it.custom
+      ? `<div class="custom-concept-wrap"><input type="text" class="custom-input" data-scope="item" data-id="${it.id}" data-field="concept" value="${esc(it.concept)}" placeholder="..."><button type="button" class="btn-revert" data-action="revert-custom" data-id="${it.id}" title="Tornar">↺</button></div>`
+      : `<select class="concept-select" data-scope="item" data-id="${it.id}" data-field="concept">${opts.map(o=>`<option value="${esc(o[0])}" ${o[0]===it.concept?'selected':''}>${esc(o[1])}</option>`).join('')}</select>`;
+    const ivaOpt = v=>`<option value="${v}" ${it.iva===v?'selected':''}>${v}% IVA</option>`;
+    tr.innerHTML = `
+      <td class="concept-cell">${concepto}</td>
+      <td class="date-range-cell" data-date-formatted="">
+        <input type="date" data-scope="item" data-id="${it.id}" data-field="d1" value="${esc(it.d1)}">
+        <span>-</span>
+        <input type="date" data-scope="item" data-id="${it.id}" data-field="d2" value="${esc(it.d2)}">
+      </td>
+      <td><input type="number" data-scope="item" data-id="${it.id}" data-field="qty" value="${it.qty}" min="0" style="text-align:center"></td>
+      <td><input type="number" data-scope="item" data-id="${it.id}" data-field="nits" value="${it.nits}" min="0" style="text-align:center"></td>
+      <td><input type="number" data-scope="item" data-id="${it.id}" data-field="price" value="${it.priceCents?(it.priceCents/100).toFixed(2):''}" step="any" placeholder="0.00" style="text-align:right"></td>
+      <td class="desc-cell" data-desc-zero="${it.desc?0:1}"><input type="number" data-scope="item" data-id="${it.id}" data-field="desc" value="${it.desc}" min="0" max="100" style="text-align:center"></td>
+      <td><select data-scope="item" data-id="${it.id}" data-field="iva">${ivaOpt(10)}${ivaOpt(21)}<option value="0" ${it.iva===0?'selected':''}>0% IVA</option></select></td>
+      <td class="subtotal" data-subtotal="${it.id}" style="text-align:right;font-weight:600">0.00 €</td>
+      <td class="no-print"><button class="btn-remove" data-action="remove-item" data-id="${it.id}">X</button></td>`;
+    cont.appendChild(tr);
+    pintarFechaFila(it.id);
+  });
+}
+
+function pintarFechaFila(id){
+  const it = state.items.find(x=>x.id===id); if(!it) return;
+  const input = document.querySelector(`[data-scope="item"][data-id="${id}"][data-field="d1"]`);
+  if(!input) return;
+  const cell = input.closest('.date-range-cell');
+  let txt='';
+  if(it.d1&&it.d2) txt = fmtFecha(new Date(it.d1))+' - '+fmtFecha(new Date(it.d2));
+  else if(it.d1) txt = fmtFecha(new Date(it.d1));
+  else if(it.d2) txt = fmtFecha(new Date(it.d2));
+  cell.setAttribute('data-date-formatted', txt);
+}
+
+function renderPayments(){
+  const cont = document.getElementById('payment-rows-container'); cont.innerHTML='';
+  state.payments.forEach(p=>{
+    const t = T();
+    const esPrimero = !p.isFinal && state.payments.find(x=>!x.isFinal)===p;
+    let modos = `<option value="FIXED" ${p.mode==='FIXED'?'selected':''}>${t.mode_fixed}</option>
+                 <option value="BEFORE_ARR" ${p.mode==='BEFORE_ARR'?'selected':''}>${t.mode_before_arr}</option>`;
+    if(esPrimero) modos += `<option value="AFTER_CONF" ${p.mode==='AFTER_CONF'?'selected':''}>${t.mode_after_conf}</option>`;
+    const div = document.createElement('div');
+    div.className = 'payment-row'+(p.isFinal?' final-row':'')+(p.paid?' is-paid':'');
+    const campos = `
+      <select class="pay-mode-select" data-scope="payment" data-id="${p.id}" data-field="mode">${modos}</select>
+      <input type="number" class="pay-days-input" data-scope="payment" data-id="${p.id}" data-field="days" value="${p.days}" min="0" style="${p.mode==='FIXED'?'display:none':''}">
+      <input type="date" class="pay-date" data-scope="payment" data-id="${p.id}" data-field="date" value="${esc(p.date)}" style="${p.mode!=='FIXED'?'display:none':''}">
+      <span class="print-pay-text"></span>
+      <span class="chk-paid-wrap"><input type="checkbox" data-scope="payment" data-id="${p.id}" data-field="paid" ${p.paid?'checked':''}> ${t.paid_text}</span>
+      <span class="paid-tag">${t.paid_tag}</span>`;
+    if(p.isFinal){
+      div.innerHTML = `<div class="payment-left-group"><span class="label-dep" style="font-weight:bold">${t.rest_label}</span><span class="before-text">${t.before_text}</span>${campos}</div><span class="val-amount">0.00 €</span>`;
+    } else {
+      div.innerHTML = `<div class="payment-left-group"><span class="label-dep">${t.deposit_label}</span>
+        <input type="number" class="pay-pct" data-scope="payment" data-id="${p.id}" data-field="pct" value="${p.pct}" min="0" max="100"><span class="pct-symbol">%</span>
+        <span class="before-text">${t.before_text}</span>${campos}</div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="val-amount">0.00 €</span><button class="btn-remove" data-action="remove-payment" data-id="${p.id}">X</button></div>`;
+    }
+    cont.appendChild(div);
+  });
+}
+
+function renderCancels(){
+  const cont = document.getElementById('canc-rows-container'); cont.innerHTML='';
+  const t = T();
+  state.cancellations.forEach(c=>{
+    const div = document.createElement('div'); div.className='canc-row';
+    if(c.type==='FREE'){
+      div.innerHTML = `<span class="edit-days">${t.canc_e_free}</span>
+        <span class="edit-days"><input type="number" data-scope="canc" data-id="${c.id}" data-field="d1" value="${c.d1}" min="1"> ${t.canc_e_days}</span>
+        <span class="print-text"></span><button class="btn-remove" data-action="remove-canc" data-id="${c.id}">X</button>`;
+    } else if(c.type==='ARRIVAL'){
+      div.innerHTML = `<span class="edit-days">${t.canc_e_between}</span>
+        <span class="edit-days"><input type="number" data-scope="canc" data-id="${c.id}" data-field="d1" value="${c.d1}" min="1"> ${t.canc_e_days2}</span>
+        <span class="print-text"></span>
+        <span class="edit-days">${t.canc_e_arrival} <input type="number" data-scope="canc" data-id="${c.id}" data-field="pct" value="${c.pct}" min="0" max="100">${t.canc_e_expenses}</span>
+        <button class="btn-remove" data-action="remove-canc" data-id="${c.id}">X</button>`;
+    } else {
+      div.innerHTML = `<span class="edit-days">${t.canc_e_between}</span>
+        <span class="edit-days"><input type="number" data-scope="canc" data-id="${c.id}" data-field="d1" value="${c.d1}" min="1"> ${t.canc_e_and}</span>
+        <span class="edit-days"><input type="number" data-scope="canc" data-id="${c.id}" data-field="d2" value="${c.d2}" min="0"> ${t.canc_e_days}</span>
+        <span class="print-text"></span>
+        <span class="edit-days"><input type="number" data-scope="canc" data-id="${c.id}" data-field="pct" value="${c.pct}" min="0" max="100">${t.canc_e_expenses}</span>
+        <button class="btn-remove" data-action="remove-canc" data-id="${c.id}">X</button>`;
+    }
+    cont.appendChild(div);
+  });
+}
+
+function renderCampos(){
+  document.querySelector('[data-field="num"]').value = state.num;
+  document.querySelector('[data-field="docDate"]').value = state.docDate;
+  ['company','nif','name','email'].forEach(f=>document.querySelector(`[data-scope="client"][data-field="${f}"]`).value = state.client[f]);
+  ['name','pmsRef','inDate','outDate'].forEach(f=>document.querySelector(`[data-scope="group"][data-field="${f}"]`).value = state.group[f]);
+  document.querySelector('[data-scope="tax"][data-field="pax"]').value = state.tax.pax;
+  document.querySelector('[data-scope="tax"][data-field="nits"]').value = state.tax.nits;
+  document.querySelector('[data-scope="tax"][data-field="enabled"]').checked = state.tax.enabled;
+  document.querySelector('[data-scope="root"][data-field="notes"]').value = state.notes;
+  document.querySelector('[data-scope="root"][data-field="tpvUrl"]').value = state.tpvUrl;
+  document.getElementById('payment-type-toggle').value = state.paymentType;
+  document.getElementById('disp-company').textContent = state.client.company||'-';
+  document.getElementById('disp-nif').textContent = state.client.nif||'-';
+  document.getElementById('disp-name').textContent = state.client.name||'-';
+  document.getElementById('tpv-print-link').href = state.tpvUrl||'#';
+  document.getElementById('tpv-print-link').textContent = state.tpvUrl||'-';
+  document.getElementById('bank-grid').style.display = state.paymentType==='TPV'?'none':'grid';
+  document.getElementById('tpv-box').style.display = state.paymentType==='TPV'?'block':'none';
+  document.getElementById('bank-title').textContent = state.paymentType==='TPV'?T().bank_title_tpv:T().bank_title;
+  document.getElementById('bank-notice-text').textContent = state.paymentType==='TPV'?T().tpv_concept_text:T().bank_concept_text;
+}
+
+function render(){ aplicarTextos(); renderCampos(); renderItems(); renderPayments(); renderCancels(); recalc(); }
+
+function recalc(){
+  let b10=0,b21=0,total=0, i10=0,i21=0;
+  state.items.forEach(it=>{
+    const bruto = Math.round(it.qty*it.nits*it.priceCents);
+    const neto = Math.round(bruto*(1-(it.desc||0)/100));
+    total += neto;
+    const sub = document.querySelector(`[data-subtotal="${it.id}"]`);
+    if(sub) sub.textContent = eur(neto);
+    const dc = document.querySelector(`[data-scope="item"][data-id="${it.id}"][data-field="desc"]`);
+    if(dc) dc.closest('.desc-cell').setAttribute('data-desc-zero', it.desc?0:1);
+    if(it.iva===10){ const base=Math.round(neto/1.1); b10+=base; i10+=neto-base; }
+    else if(it.iva===21){ const base=Math.round(neto/1.21); b21+=base; i21+=neto-base; }
+  });
+  const nits = nochesEntre(state.group.inDate, state.group.outDate);
+  document.getElementById('nits-num').value = nits;
+
+  let tasaTotal=0;
+  const checkin = state.group.inDate ? new Date(state.group.inDate) : null;
+  let tarifa = (checkin && checkin >= new Date('2027-04-01')) ? 1034 : 924;
+  const taxNits = Math.min(state.tax.nits,7);
+  if(state.tax.enabled){ tasaTotal = state.tax.pax*taxNits*tarifa; }
+  document.getElementById('tax-rate-display').value = (tarifa/100).toFixed(2)+' € / nit';
+  document.getElementById('tax-total-display').value = eur(tasaTotal);
+  document.getElementById('tax-card').classList.toggle('has-tax-active', state.tax.enabled);
+  document.getElementById('row-taxa-base').style.display = state.tax.enabled?'table-row':'none';
+  document.getElementById('row-taxa-iva').style.display = state.tax.enabled?'table-row':'none';
+  if(state.tax.enabled){
+    const base = Math.round(tasaTotal/1.1);
+    document.getElementById('val-taxa-base').textContent = eur(base);
+    document.getElementById('val-taxa-iva').textContent = eur(tasaTotal-base);
+    total += tasaTotal;
+  }
+  document.getElementById('base-10').textContent = eur(b10);
+  document.getElementById('iva-10').textContent = eur(i10);
+  document.getElementById('base-21').textContent = eur(b21);
+  document.getElementById('iva-21').textContent = eur(i21);
+  document.getElementById('total-final').innerHTML = '<strong>'+eur(total)+'</strong>';
+
+  let sumaPct=0, ultimaFecha=null;
+  const docFecha = state.docDate?new Date(state.docDate):new Date();
+  state.payments.forEach(p=>{
+    const fila = document.querySelector(`[data-scope="payment"][data-id="${p.id}"][data-field="mode"]`);
+    if(!fila) return;
+    const row = fila.closest('.payment-row');
+    let f=null;
+    if(p.mode==='AFTER_CONF'){ f=new Date(docFecha); f.setDate(f.getDate()+p.days); }
+    else if(p.mode==='BEFORE_ARR'){ if(checkin){ f=new Date(checkin); f.setDate(f.getDate()-p.days); } }
+    else { f = p.date?new Date(p.date):null; }
+    if(ultimaFecha && f && f<ultimaFecha) f=new Date(ultimaFecha);
+    if(f) ultimaFecha=new Date(f);
+    const span = row.querySelector('.print-pay-text'); if(span) span.textContent = f?fmtFecha(f):'dd/mm/aaaa';
+    if(!p.isFinal){ sumaPct += p.pct; row.querySelector('.val-amount').textContent = eur(Math.round(total*p.pct/100)); }
+    row.classList.toggle('is-paid', p.paid);
+  });
+  const final = state.payments.find(p=>p.isFinal);
+  if(final){ const fila=document.querySelector(`[data-scope="payment"][data-id="${final.id}"]`); if(fila) fila.closest('.payment-row').querySelector('.val-amount').textContent = eur(Math.round(total*Math.max(0,100-sumaPct)/100)); }
+  document.getElementById('pct-alert').style.display = sumaPct>100?'block':'none';
+  document.getElementById('btn-print').disabled = sumaPct>100;
+
+  state.cancellations.forEach(c=>{
+    const row = document.querySelector(`[data-scope="canc"][data-id="${c.id}"]`).closest('.canc-row');
+    const span = row.querySelector('.print-text'); if(!span) return;
+    let dt1='dd/mm/aaaa', dt2='dd/mm/aaaa';
+    if(checkin){ const a=new Date(checkin); a.setDate(a.getDate()-c.d1); dt1=fmtFecha(a); if(c.type==='RANGE'){ const b=new Date(checkin); b.setDate(b.getDate()-c.d2); dt2=fmtFecha(b);} }
+    const t=T();
+    if(c.type==='FREE') span.innerHTML = `${t.canc_free_1} <strong>${dt1}</strong>`;
+    else if(c.type==='ARRIVAL') span.innerHTML = `${t.canc_between} <strong>${dt1}</strong> ${t.canc_arrival} <strong>${c.pct}%</strong> ${t.canc_expenses}`;
+    else span.innerHTML = `${t.canc_between} <strong>${dt1}</strong> ${t.canc_and_the} <strong>${dt2}</strong>: <strong>${c.pct}%</strong> ${t.canc_expenses}`;
+  });
+}
+
+function nochesEntre(a,b){ if(!a||!b) return 0; const d1=new Date(a),d2=new Date(b); if(!(d2>d1)) return 0; return Math.round((d2-d1)/86400000); }
+
+function nuevaProforma(){
+  state = estadoVacio();
+  state.num = 'PRO-' + new Date().getFullYear() + '-001';
+  state.payments = [
+    {id:nuevoId(),isFinal:false,pct:25,mode:'AFTER_CONF',days:7,date:'',paid:false},
+    {id:nuevoId(),isFinal:false,pct:50,mode:'BEFORE_ARR',days:30,date:'',paid:false},
+    {id:nuevoId(),isFinal:true,pct:0,mode:'BEFORE_ARR',days:14,date:'',paid:false}
+  ];
+  state.cancellations = [
+    {id:nuevoId(),type:'FREE',d1:61,d2:0,pct:0},
+    {id:nuevoId(),type:'RANGE',d1:60,d2:22,pct:25},
+    {id:nuevoId(),type:'RANGE',d1:21,d2:15,pct:50},
+    {id:nuevoId(),type:'RANGE',d1:14,d2:8,pct:75},
+    {id:nuevoId(),type:'ARRIVAL',d1:7,d2:0,pct:100}
+  ];
+  state.items = [nuevoItem('ALLOTJAMENT')];
+  render();
+}
+
+function nuevoItem(cat){
+  const opts = opciones[state.lang][cat];
+  return {id:nuevoId(),cat,concept:opts[0][0],custom:false,d1:'',d2:'',qty:0,nits:0,priceCents:0,desc:0,iva:cat==='SALES'?21:10};
+}
+
+document.addEventListener('click', e=>{
+  const el = e.target.closest('[data-action]'); if(!el) return;
+  const acc = el.dataset.action;
+  if(acc==='add-item'){ state.items.push(nuevoItem(el.dataset.cat)); render(); }
+  else if(acc==='remove-item'){ state.items = state.items.filter(x=>x.id!==el.dataset.id); render(); }
+  else if(acc==='revert-custom'){ const it=state.items.find(x=>x.id===el.dataset.id); if(it){ it.custom=false; it.concept=opciones[state.lang][it.cat][0][0]; render(); } }
+  else if(acc==='add-payment'){ state.payments.splice(state.payments.findIndex(p=>p.isFinal),0,{id:nuevoId(),isFinal:false,pct:25,mode:'BEFORE_ARR',days:14,date:'',paid:false}); render(); }
+  else if(acc==='remove-payment'){ state.payments = state.payments.filter(p=>p.id!==el.dataset.id); render(); }
+  else if(acc==='add-canc'){ state.cancellations.push({id:nuevoId(),type:'RANGE',d1:30,d2:15,pct:50}); render(); }
+  else if(acc==='remove-canc'){ state.cancellations = state.cancellations.filter(c=>c.id!==el.dataset.id); render(); }
+  else if(acc==='new'){ if(confirm('Crear una proforma nova? Els canvis no desats es perden.')) nuevaProforma(); }
+  else if(acc==='save'){ guardar(); }
+  else if(acc==='load'){ cargar(); }
+  else if(acc==='print'){ imprimir(); }
+});
+
+document.addEventListener('input', e=>{
+  const el = e.target; if(!el.dataset.scope) return;
+  const {scope,id,field} = el.dataset;
+  const val = el.value;
+  if(scope==='root'){ state[field]=val; if(field==='tpvUrl'){ document.getElementById('tpv-print-link').href=val||'#'; document.getElementById('tpv-print-link').textContent=val||'-'; } }
+  else if(scope==='client'){ state.client[field]=val; document.getElementById('disp-'+(field==='company'?'company':field==='nif'?'nif':'name')).textContent=val||'-'; }
+  else if(scope==='group'){ state.group[field]=val; }
+  else if(scope==='tax'){ state.tax[field]=el.type==='checkbox'?el.checked:(parseInt(val)||0); }
+  else if(scope==='item'){ const it=state.items.find(x=>x.id===id); if(it){ if(field==='price') it.priceCents=Math.round((parseFloat(val.replace(',','.'))||0)*100); else if(field==='concept') it.concept=val; else it[field]=parseFloat(val)||0; } }
+  else if(scope==='payment'){ const p=state.payments.find(x=>x.id===id); if(p){ if(field==='paid'){p.paid=el.checked;} else if(field==='days'){p.days=parseInt(val)||0;} else if(field==='pct'){p.pct=parseFloat(val)||0;} else p[field]=val; } }
+  else if(scope==='canc'){ const c=state.cancellations.find(x=>x.id===id); if(c) c[field]=parseInt(val)||0; }
+  recalc();
+});
+
+document.addEventListener('change', e=>{
+  const el = e.target; const {scope,id,field} = el.dataset;
+  if(scope==='item' && field==='concept'){ const it=state.items.find(x=>x.id===id); if(it){ if(el.value==='CUSTOM'){ it.custom=true; it.concept=''; } else it.concept=el.value; render(); } }
+  else if(scope==='item' && field==='iva'){ const it=state.items.find(x=>x.id===id); if(it){ it.iva=parseInt(el.value); recalc(); } }
+  else if(scope==='item' && (field==='d1'||field==='d2')){ const it=state.items.find(x=>x.id===id); if(it){ it[field]=el.value; pintarFechaFila(id); recalc(); } }
+  else if(scope==='payment' && field==='mode'){ const p=state.payments.find(x=>x.id===id); if(p){ p.mode=el.value; render(); } }
+  else if(scope==='root' && field==='paymentType'){ state.paymentType=el.value; renderCampos(); }
+  else if(scope==='tax' && field==='enabled'){ state.tax.enabled=el.checked; recalc(); }
+  else if(scope==='group'){ state.group[field]=el.value; if(field==='inDate'||field==='outDate'){ syncPrimeraFila(); recalc(); } }
+  else if(scope==='client'){ state.client[field]=el.value; }
+  else if(scope==='root'){ state[field]=el.value; }
+});
+
+function syncPrimeraFila(){
+  const it = state.items.find(x=>x.cat==='ALLOTJAMENT'); if(!it) return;
+  if(state.group.inDate) it.d1 = state.group.inDate;
+  if(state.group.outDate) it.d2 = state.group.outDate;
+  it.nits = nochesEntre(state.group.inDate,state.group.outDate);
+  render();
+}
+
+function imprimir(){
+  const original = document.title;
+  document.title = [state.group.pmsRef,state.group.name,state.num,state.group.inDate].map(x=>(x||'').replace(/[^a-zA-Z0-9]/g,'')).filter(Boolean).join('_')||'PROFORMA';
+  setTimeout(()=>{ window.print(); setTimeout(()=>document.title=original,1500); },100);
+}
+
+async function refrescarLista(){
+  const sel = document.getElementById('proformas-list');
+  sel.innerHTML='<option value="">Cercant...</option>';
+  try{
+    const r = await fetch(SHEET_URL+'?hotel='+HOTEL_CODE);
+    const db = await r.json();
+    sel.innerHTML='<option value="">-- Selecciona --</option>';
+    Object.keys(db).sort().reverse().forEach(id=>{ const o=document.createElement('option'); o.value=id; o.textContent=(db[id].num||'')+' - '+(db[id].clientCompany||''); sel.appendChild(o); });
+  }catch(e){ sel.innerHTML='<option value="">Error</option>'; }
+}
+
+async function guardar(){
+  if(!state.num){ alert("Indica un número de proforma!"); return; }
+  const data = {
+    hotelCode: HOTEL_CODE, num: state.num, docDate: state.docDate, lang: state.lang,
+    clientCompany: state.client.company, clientNif: state.client.nif, clientName: state.client.name, clientEmail: state.client.email,
+    groupName: state.group.name, pmsRef: state.group.pmsRef, inDate: state.group.inDate, outDate: state.group.outDate,
+    notes: state.notes, taxEnable: state.tax.enabled, taxPax: state.tax.pax, taxNits: state.tax.nits,
+    paymentType: state.paymentType, tpvUrl: state.tpvUrl,
+    items: state.items.map(it=>({bodyId:bodyPorCat[it.cat],concept:it.concept,isCustom:it.custom,startDate:it.d1,endDate:it.d2,qty:it.qty,nits:it.nits,preu:it.priceCents/100,desc:it.desc,iva:it.iva})),
+    payments: state.payments.map(p=>({isFinal:p.isFinal,pct:p.pct,mode:p.mode,days:p.days,date:p.date,isPaid:p.paid})),
+    cancellations: state.cancellations.map(c=>({type:c.type,d1:c.d1,d2:c.d2,pct:c.pct}))
+  };
+  try{
+    await fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'data='+encodeURIComponent(JSON.stringify(data))});
+    alert('Proforma '+state.num+' enviada a desar!');
+    setTimeout(refrescarLista,1500);
+  }catch(e){ alert('Error en enviar.'); }
+}
+
+function cargar(){
+  const sel = document.getElementById('proformas-list');
+  if(!sel.value) return;
+  fetch(SHEET_URL+'?hotel='+HOTEL_CODE+'&id='+sel.value)
+    .then(r=>r.json())
+    .then(p=>{
+      state = estadoVacio();
+      state.num=p.num||''; state.docDate=p.docDate||''; state.lang=p.lang||'ca';
+      state.client={company:p.clientCompany||'',nif:p.clientNif||'',name:p.clientName||'',email:p.clientEmail||''};
+      state.group={name:p.groupName||'',pmsRef:p.pmsRef||'',inDate:p.inDate||'',outDate:p.outDate||''};
+      state.notes=p.notes||''; state.tax={enabled:!!p.taxEnable,pax:p.taxPax||0,nits:p.taxNits||0};
+      state.paymentType=p.paymentType||'BANK'; state.tpvUrl=p.tpvUrl||'';
+      state.items=(p.items||[]).map(it=>({id:nuevoId(),cat:catPorBody[it.bodyId]||'ALLOTJAMENT',concept:it.concept,custom:!!it.isCustom,d1:it.startDate||'',d2:it.endDate||'',qty:it.qty||0,nits:it.nits||0,priceCents:Math.round((it.preu||0)*100),desc:it.desc||0,iva:it.iva||10}));
+      state.payments=(p.payments||[]).map(pm=>({id:nuevoId(),isFinal:!!pm.isFinal,pct:pm.pct||0,mode:pm.mode||'FIXED',days:pm.days||0,date:pm.date||'',paid:!!pm.isPaid}));
+      state.cancellations=(p.cancellations||[]).map(c=>({id:nuevoId(),type:c.type,d1:c.d1||0,d2:c.d2||0,pct:c.pct||0}));
+      document.getElementById('lang-select').value=state.lang;
+      render();
+    })
+    .catch(()=>alert('No s\'ha pogut carregar.'));
+}
+
+document.getElementById('pin-form').addEventListener('submit', e=>{
+  e.preventDefault();
+  if(document.getElementById('pin-input').value===CORRECT_PIN){
+    sessionStorage.setItem('ok','1');
+    document.getElementById('pin-lock-overlay').style.display='none';
+  } else { document.getElementById('pin-error-msg').style.display='block'; }
+});
+
+window.addEventListener('DOMContentLoaded', ()=>{
+  if(sessionStorage.getItem('ok')==='1') document.getElementById('pin-lock-overlay').style.display='none';
+  document.getElementById('lang-select').addEventListener('change', e=>{ state.lang=e.target.value; render(); });
+  nuevaProforma();
+  refrescarLista();
+});
+</script>
+</body>
+</html>
