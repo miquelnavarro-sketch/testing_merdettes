@@ -1,11 +1,189 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proforma Grups</title>
+<style>
+:root {
+  --primary:#1b2a4a; --accent:#c5a059; --tertiary:#c5a059;
+  --bg:#f4f6f8; --border:#dcdfe6; --text:#2c3e50;
+  --section-bg:#eef2f7; --control-bg:#eef2f7; --panel-bg:#fafafa;
+  --tax-bg:#f0f4f8; --tax-border:#b8cce4;
+  --bank-bg:#f4f6fa; --bank-border:#d0d7de; --grand-bg:#f0f4f8;
+  --pin-bg:rgba(27,42,74,0.95); --pin-hover:#283c66;
+  --pay-sched-bg:#fdfcf7; --pay-sched-border:#f0e6d2;
+  --header-border-w:2px;
+}
+* { box-sizing:border-box; font-family:Arial,Helvetica,"Segoe UI",Roboto,sans-serif; -webkit-font-smoothing:antialiased; }
+body { background:var(--bg); color:var(--text); margin:0; padding:20px; font-size:13px; }
+.container { max-width:1250px; margin:0 auto; background:#fff; padding:35px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.08); }
 
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+input[type="number"] { -moz-appearance:textfield; appearance:textfield; }
+
+#pin-lock-overlay { position:fixed; top:0; left:0; width:100vw; height:100vh; background:var(--pin-bg); z-index:99999; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(5px); }
+.pin-card { background:#fff; padding:30px; border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,0.25); text-align:center; max-width:360px; width:90%; border-top:5px solid var(--accent); }
+.pin-card h3 { margin:0 0 10px 0; color:var(--primary); font-size:16px; }
+.pin-card p { font-size:11px; color:#666; margin-bottom:20px; }
+.pin-card input[type="password"] { width:100%; padding:10px; font-size:14px; border:1px solid var(--border); border-radius:4px; text-align:center; margin-bottom:15px; letter-spacing:2px; }
+.pin-card button { width:100%; padding:10px; background:var(--primary); color:#fff; border:none; border-radius:4px; font-weight:bold; font-size:12px; cursor:pointer; transition:background .2s; }
+.pin-card button:hover { background:var(--pin-hover); }
+#pin-error-msg { color:#dc3545; font-size:11px; font-weight:bold; margin-top:10px; display:none; }
+
+.control-bar { background:var(--control-bg); border:1px solid var(--border); padding:10px 15px; border-radius:6px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
+.control-group { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.control-group label { font-weight:bold; color:var(--primary); font-size:11px; }
+.hotel-badge { background:var(--primary); color:#fff; font-weight:bold; font-size:11px; padding:5px 12px; border-radius:20px; letter-spacing:.3px; }
+
+.header { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:var(--header-border-w) solid var(--accent); padding-bottom:15px; margin-bottom:25px; }
+.brand { max-width:58%; }
+.logo-hotel { width:320px; height:auto; max-height:95px; object-fit:contain; display:block; margin-bottom:12px; }
+.brand p { margin:2px 0; color:#555; font-size:11px; line-height:1.35; }
+.doc-meta { text-align:right; }
+.doc-meta h2 { margin:0 0 10px 0; font-size:22px; color:var(--tertiary); letter-spacing:1px; font-weight:700; }
+.doc-meta .meta-row { margin-top:4px; display:flex; align-items:center; justify-content:flex-end; gap:8px; }
+
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:25px; }
+.card { background:var(--panel-bg); border:1px solid var(--border); border-radius:6px; padding:15px; }
+.card h3 { margin:0 0 12px 0; font-size:12px; color:var(--primary); font-weight:bold; border-bottom:1px solid #eee; padding-bottom:5px; letter-spacing:.5px; }
+.field-group { margin-bottom:8px; display:flex; align-items:center; }
+.field-group label { width:130px; font-weight:600; font-size:11px; color:#555; }
+.field-group input, .field-group select { flex:1; padding:5px 8px; border:1px solid var(--border); border-radius:4px; font-size:12px; }
+.uppercase-input { text-transform:uppercase; }
+
+.section-header { background:var(--section-bg); color:var(--primary); font-weight:bold; font-size:12px; padding:8px 10px; border-left:4px solid var(--accent); margin-top:20px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; }
+table { width:100%; border-collapse:collapse; margin-bottom:10px; }
+th { background:var(--primary); color:#fff; padding:10px 8px; text-align:left; font-size:11.5px; font-weight:bold; letter-spacing:.2px; vertical-align:middle; }
+td { padding:8px 6px; border-bottom:1px solid #eee; vertical-align:middle; }
+input[type="text"], input[type="number"], input[type="date"], select { width:100%; padding:6px; border:1px solid var(--border); border-radius:4px; font-size:12px; }
+
+td.date-range-cell { vertical-align:middle !important; padding:8px 6px !important; background:transparent !important; border-bottom:1px solid #eee !important; text-align:center; }
+.date-range-cell { display:inline-flex !important; gap:4px; align-items:center !important; justify-content:center !important; background:transparent !important; border:none !important; padding:0 !important; min-width:210px; text-align:center; vertical-align:middle !important; margin:0 auto; height:100% !important; line-height:1.2 !important; }
+.date-range-cell input[type="date"] { font-size:11px; padding:2px 3px !important; border:1px solid var(--border); background:#fff; border-radius:3px; min-width:95px; text-align:center; height:24px !important; margin:0 !important; }
+.date-range-cell span { font-weight:bold; color:#888; }
+
+.toolbar { display:flex; justify-content:space-between; margin-bottom:20px; }
+.btn { padding:5px 12px; border:none; border-radius:4px; cursor:pointer; font-weight:600; font-size:11px; }
+.btn-add { background:#28a745; color:#fff; }
+.btn-save { background:#007bff; color:#fff; }
+.btn-danger { background:#dc3545; color:#fff; }
+.btn-remove { background:#dc3545; color:#fff; padding:3px 7px; font-size:11px; border:none; border-radius:4px; cursor:pointer; }
+.btn-revert { background:#6b7280; color:#fff; padding:3px 6px; font-size:11px; border:none; border-radius:4px; cursor:pointer; }
+.btn-print { background:var(--primary); color:#fff; font-size:13px; padding:8px 18px; }
+.btn-print:disabled { background:#94a3b8; cursor:not-allowed; opacity:.7; }
+.btn-ghost { background:transparent; border:1px solid var(--border); color:var(--primary); }
+
+.tax-card { background:var(--tax-bg); border:1px solid var(--tax-border); padding:12px; border-radius:6px; margin-top:25px; margin-bottom:15px; font-size:11px; }
+.tax-card h4 { margin:0 0 8px 0; color:var(--primary); font-size:12px; display:flex; align-items:center; gap:8px; }
+.tax-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; align-items:center; margin-top:8px; }
+
+.summary-block { display:grid; grid-template-columns:1fr 360px; gap:20px; margin-top:20px; margin-bottom:25px; }
+.payment-schedule { background:var(--pay-sched-bg); border:1px solid var(--pay-sched-border); padding:12px; border-radius:6px; }
+.payment-schedule h4 { margin:0 0 12px 0; color:var(--primary); font-size:12px; border-bottom:1px solid #eee; padding-bottom:4px; display:flex; justify-content:space-between; align-items:center; }
+.payment-row { display:flex; align-items:center; justify-content:space-between; gap:6px; margin-bottom:10px; font-size:11px; white-space:nowrap; width:100%; }
+.payment-left-group { display:flex; align-items:center; gap:4px; flex-wrap:nowrap; }
+.payment-row .label-dep { font-weight:600; min-width:65px; display:inline-block; }
+.payment-row input[type="number"].pay-pct { width:42px; text-align:center; }
+.payment-row input[type="number"].pay-days-input { width:55px !important; text-align:center; padding:4px; font-size:12px; font-weight:bold; }
+.payment-row input[type="date"] { width:115px; }
+.payment-row select { width:auto; font-size:10px; padding:2px 4px; }
+.payment-row .paid-tag { color:#28a745; font-weight:bold; font-size:11px; display:none; }
+.payment-row.is-paid .pay-pct, .payment-row.is-paid .pct-symbol, .payment-row.is-paid .before-text,
+.payment-row.is-paid .pay-date, .payment-row.is-paid .pay-mode-select, .payment-row.is-paid .pay-days-input { display:none !important; }
+.payment-row.is-paid .pay-amount-input { border:none !important; background:transparent !important; font-weight:bold; color:#28a745; }
+.payment-row.is-paid .paid-tag { display:inline; }
+.pct-alert { color:#dc3545; font-size:11px; font-weight:bold; margin-top:8px; display:none; background:#f8d7da; padding:6px; border-radius:4px; border:1px solid #f5c6cb; }
+
+.totals-table { width:100%; border-collapse:collapse; }
+.totals-table td { padding:4px 8px; text-align:right; }
+.totals-table td:first-child { text-align:left; }
+.totals-table .grand-total { font-size:15px; font-weight:bold; color:var(--primary); background:var(--grand-bg); }
+
+.cancellation-section { background:var(--panel-bg); border:1px solid var(--border); padding:12px; border-radius:6px; margin-bottom:20px; }
+.cancellation-section h4 { margin:0 0 10px 0; font-size:12px; color:var(--primary); border-bottom:1px solid #eee; padding-bottom:4px; display:flex; justify-content:space-between; align-items:center; }
+.canc-row { display:flex; align-items:center; gap:6px; margin-bottom:6px; font-size:11px; white-space:nowrap; }
+.canc-row input[type="number"] { width:45px; text-align:center; }
+
+.bank-card { background:var(--bank-bg); border:1px solid var(--bank-border); border-left:4px solid var(--primary); border-radius:6px; padding:14px 18px; margin-bottom:20px; }
+.bank-card h4 { margin:0 0 10px 0; font-size:12px; color:var(--primary); letter-spacing:.5px; display:flex; align-items:center; justify-content:space-between; font-weight:bold; }
+.bank-details-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; background:#fff; padding:10px 14px; border-radius:5px; border:1px solid #e1e4e8; margin-bottom:10px; }
+.bank-item { font-size:11px; }
+.bank-item .label { color:#666; font-size:10px; display:block; margin-bottom:2px; }
+.bank-item .value { font-weight:bold; color:var(--primary); font-family:monospace,monospace; font-size:12px; }
+.tpv-details-box { background:#fff; padding:12px 14px; border-radius:5px; border:1px solid #e1e4e8; margin-bottom:10px; display:none; }
+.tpv-details-box label { font-size:10px; color:#666; text-transform:uppercase; font-weight:bold; display:block; margin-bottom:4px; }
+.tpv-details-box input[type="url"] { font-size:12px; padding:6px; border:1px solid var(--border); border-radius:4px; width:100%; color:var(--primary); font-weight:bold; }
+.tpv-print-link { display:none; word-break:break-all; font-size:12px; font-weight:bold; color:#007bff; text-decoration:underline; }
+.bank-notice { font-size:11px; color:#555; margin-bottom:8px; display:flex; align-items:center; gap:5px; }
+.tax-disclaimer { font-size:11px; color:#555; margin-bottom:8px; }
+.bank-card textarea { width:100%; min-height:50px; height:auto; border:1px solid var(--border); border-radius:4px; padding:6px; font-size:11px; background:#fff; resize:vertical; overflow:hidden; display:block; }
+.print-notes-box { display:none; width:100%; font-size:11px; line-height:1.4; white-space:pre-wrap; word-break:break-word; padding:6px; border:1px solid var(--border); border-radius:4px; background:#fff; margin-top:5px; }
+
+.signatures-wrapper { display:grid; grid-template-columns:1fr 1fr; gap:20px; border-top:1px dashed var(--border); padding-top:25px; margin-top:25px; }
+.client-signature-box { border:1px solid var(--border); border-radius:6px; padding:12px; background:var(--panel-bg); }
+.client-signature-box h4 { margin:0 0 8px 0; font-size:11px; color:var(--primary); font-weight:bold; border-bottom:1px solid #eee; padding-bottom:4px; }
+.client-fields p { margin:4px 0; font-size:11px; }
+.signature-line-space { height:60px; border-bottom:1px dashed #ccc; margin-top:10px; position:relative; }
+.signature-line-space::after { content:attr(data-sign-label); position:absolute; bottom:2px; right:5px; font-size:10px; color:#999; }
+.hotel-signature-box { display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid var(--border); border-radius:6px; padding:12px; background:var(--panel-bg); }
+.contact-person { display:flex; flex-direction:column; align-items:center; gap:6px; margin-bottom:10px; width:100%; text-align:center; }
+.contact-person.layout-row { flex-direction:row; align-items:center; text-align:left; gap:12px; }
+.contact-person.manager-mode { flex-direction:row; align-items:center; text-align:left; gap:12px; }
+.avatar-manager { width:60px; height:60px; border-radius:50%; object-fit:cover; border:2px solid var(--accent); flex-shrink:0; }
+.avatar-initials { width:60px; height:60px; border-radius:50%; background:var(--primary); color:#fff; font-weight:bold; font-size:22px; display:flex; align-items:center; justify-content:center; border:2px solid var(--accent); flex-shrink:0; }
+.contact-info p { margin:2px 0; font-size:11px; }
+.contact-info .name { font-weight:bold; color:var(--primary); font-size:13px; }
+.staff-name-input { width:80%; padding:5px 8px; font-size:12px; text-align:center; border:1px solid var(--border); border-radius:4px; font-weight:bold; color:var(--primary); margin-bottom:4px; }
+.layout-row .staff-name-input { width:100%; text-align:left; }
+.staff-name-display { display:none; font-weight:bold; color:var(--primary); font-size:13px; }
+.img-sign { height:80px; width:auto; object-fit:contain; display:block; margin:5px auto 0 auto; }
+
+@media print {
+  #pin-lock-overlay { display:none !important; }
+  body { background:#fff; padding:0; }
+  .container { box-shadow:none; padding:0; max-width:100%; }
+  .toolbar, .btn-remove, .btn-revert, .btn-add, .chk-paid-wrap, .edit-days, .no-print, .control-bar, .payment-type-select { display:none !important; }
+  input, select, textarea { border:none !important; background:transparent !important; appearance:none; -webkit-appearance:none; padding:0 !important; }
+  .field-group label { width:120px; }
+  .header, .grid, .sec-wrapper, .summary-block, .tax-card, .cancellation-section, .bank-card, .signatures-wrapper { page-break-inside:avoid !important; break-inside:avoid !important; }
+  tr, .payment-row, .canc-row { page-break-inside:avoid !important; break-inside:avoid !important; }
+  th { background:var(--primary) !important; color:#fff !important; -webkit-print-color-adjust:exact; font-weight:bold !important; font-size:11.5px !important; }
+  .section-header { background:var(--section-bg) !important; -webkit-print-color-adjust:exact; }
+  .card, .cancellation-section, .tax-card, .bank-card, .client-signature-box, .hotel-signature-box { border:1px solid #ccc !important; }
+  .pct-alert { display:none !important; }
+  .canc-row { font-size:11px; margin-bottom:4px; }
+  .canc-row .print-text { display:inline !important; }
+  .canc-row .edit-days { display:none !important; }
+  .pay-mode-select, .pay-days-input, .pay-date { display:none !important; }
+  .payment-row .print-pay-text { display:inline !important; font-weight:normal; }
+  .date-range-cell { border:none !important; padding:0 !important; justify-content:center !important; display:block !important; line-height:1.2 !important; }
+  .date-range-cell input[type="date"], .date-range-cell span { display:none !important; }
+  .date-range-cell::after { content:attr(data-date-formatted); font-size:11px; color:#333; text-align:center; display:block; width:100%; }
+  .desc-cell[data-desc-zero="true"] input { display:none !important; }
+  .tax-card:not(.has-tax-active) { display:none !important; }
+  .sec-wrapper:has(tbody:empty) { display:none !important; }
+  .tpv-details-box input[type="url"] { display:none !important; }
+  .tpv-print-link { display:inline !important; }
+  .bank-card textarea { display:none !important; }
+  .print-notes-box { display:block !important; border:1px solid #ccc !important; }
+  .staff-name-input { display:none !important; }
+  .staff-name-display { display:block !important; }
+  .pay-amount-input { border:none !important; background:transparent !important; text-align:right !important; }
+}
+.print-pay-text { display:none; }
+.print-text { display:none; }
+</style>
+</head>
+<body>
 
 <div id="pin-lock-overlay">
   <div class="pin-card">
     <h3>🔒 Accés Restringit</h3>
     <p id="pin-hotel-name">Carregant…</p>
-    <form id="pin-form">
-      <input type="password" id="pin-input" placeholder="Introdueix la clau d'accés" required="">
+    <form id="pin-form" onsubmit="event.preventDefault(); validarPin();">
+      <input type="password" id="pin-input" placeholder="Introdueix la clau d'accés" autofocus required>
       <button type="submit">Entrar</button>
     </form>
     <div id="pin-error-msg">⚠️ Clau d'accés incorrecta!</div>
@@ -16,27 +194,27 @@
   <div class="control-bar no-print">
     <div class="control-group">
       <span id="hotel-badge" class="hotel-badge">🏨 Hotel</span>
-      <select id="hotel-select" style="width:210px; display:none;"></select>
-      <button class="btn btn-ghost" title="Tancar sessió">🔓 Sortir</button>
+      <select id="hotel-select" onchange="canviarHotel(this.value)" style="width:210px; display:none;"></select>
+      <button class="btn btn-ghost" onclick="tancarSessio()" title="Tancar sessió">🔓 Sortir</button>
     </div>
     <div class="control-group">
       <label>📊 Google Sheets:</label>
       <select id="proformas-list" style="width:220px;">
         <option value="">-- Selecciona per carregar --</option>
       </select>
-      <button class="btn btn-save">Carregar</button>
+      <button class="btn btn-save" onclick="carregarProformaSeleccionada()">Carregar</button>
     </div>
     <div class="control-group">
       <span id="manager-select-wrap" style="display:none;">
         <label for="manager-select">👤 Gestor/a:</label>
-        <select id="manager-select" style="width:170px;"></select>
+        <select id="manager-select" onchange="canviarGestor(this.value)" style="width:170px;"></select>
       </span>
-      <button class="btn btn-add">+ Nova Proforma</button>
-      <button class="btn btn-save">⧉ Duplicar</button>
-      <button class="btn btn-save">💾 Desar a Google Sheets</button>
+      <button class="btn btn-add" onclick="crearNovaProforma()">+ Nova Proforma</button>
+      <button class="btn btn-save" onclick="duplicarProforma()">⧉ Duplicar</button>
+      <button class="btn btn-save" onclick="guardarProformaActual()">💾 Desar a Google Sheets</button>
       <label for="lang-select" style="margin-left:10px;">🌐 Idioma:</label>
-      <select id="lang-select" style="width:100px;">
-        <option value="ca" selected="">Català</option>
+      <select id="lang-select" onchange="canviarIdioma(this.value)" style="width:100px;">
+        <option value="ca" selected>Català</option>
         <option value="es">Español</option>
         <option value="en">English</option>
         <option value="fr">Français</option>
@@ -57,7 +235,7 @@
       </div>
       <div class="meta-row">
         <label data-i18n="data_doc">Data:</label>
-        <input type="date" id="data-doc" max="2050-12-31" style="width:125px;">
+        <input type="date" id="data-doc" max="2050-12-31" onchange="recalcular()" style="width:125px;">
       </div>
     </div>
   </div>
@@ -65,21 +243,21 @@
   <div class="grid">
     <div class="card">
       <h3 data-i18n="title_client">Dades del Client / Agència</h3>
-      <div class="field-group"><label data-i18n="label_company">Empresa / Agència:</label><input type="text" id="client-company-input" placeholder="Nom de la companyia"></div>
-      <div class="field-group"><label data-i18n="label_nif">NIF / CIF / Passaport:</label><input type="text" id="client-nif-input" class="uppercase-input" placeholder="Codi fiscal"></div>
-      <div class="field-group"><label data-i18n="label_contact">Persona Contacte:</label><input type="text" id="client-name-input" placeholder="Nom del responsable"></div>
+      <div class="field-group"><label data-i18n="label_company">Empresa / Agència:</label><input type="text" id="client-company-input" placeholder="Nom de la companyia" oninput="sincronitzarDadesClient()"></div>
+      <div class="field-group"><label data-i18n="label_nif">NIF / CIF / Passaport:</label><input type="text" id="client-nif-input" class="uppercase-input" placeholder="Codi fiscal" oninput="this.value=this.value.toUpperCase(); sincronitzarDadesClient();"></div>
+      <div class="field-group"><label data-i18n="label_contact">Persona Contacte:</label><input type="text" id="client-name-input" placeholder="Nom del responsable" oninput="sincronitzarDadesClient()"></div>
       <div class="field-group"><label data-i18n="label_email">Email / Telèfon:</label><input type="text" id="client-email-input" placeholder="contacte@empresa.com"></div>
     </div>
     <div class="card">
       <h3 data-i18n="title_group">Detalls del Grup / Event</h3>
       <div class="field-group"><label data-i18n="label_group_name">Nom del Grup:</label><input type="text" id="group-name-input" placeholder="Ex: Congrés MedTech"></div>
-      <div class="field-group"><label data-i18n="label_pms_ref">Ref. Reserva / PMS:</label><input type="text" id="pms-ref-input" class="uppercase-input" placeholder="GRP-88231"></div>
+      <div class="field-group"><label data-i18n="label_pms_ref">Ref. Reserva / PMS:</label><input type="text" id="pms-ref-input" class="uppercase-input" placeholder="GRP-88231" oninput="this.value=this.value.toUpperCase();"></div>
       <div class="field-group">
         <label data-i18n="label_dates">Entrada / Sortida:</label>
-        <input type="date" id="in-date" max="2050-12-31" style="width:48%; display:inline-block;">
-        <input type="date" id="out-date" max="2050-12-31" style="width:48%; display:inline-block; margin-left:2%;">
+        <input type="date" id="in-date" max="2050-12-31" onchange="sincronitzarCapcaleraAmbAllotjament()" style="width:48%; display:inline-block;">
+        <input type="date" id="out-date" max="2050-12-31" onchange="sincronitzarCapcaleraAmbAllotjament()" style="width:48%; display:inline-block; margin-left:2%;">
       </div>
-      <div class="field-group"><label data-i18n="label_nights">Nits Calculades:</label><input type="text" id="nits-num" value="0" readonly="" style="background:#eee; font-weight:bold;"></div>
+      <div class="field-group"><label data-i18n="label_nights">Nits Calculades:</label><input type="text" id="nits-num" value="0" readonly style="background:#eee; font-weight:bold;"></div>
     </div>
   </div>
 
@@ -102,7 +280,7 @@
   <div class="sec-wrapper">
     <div class="section-header">
       <span data-i18n="sec_accommodation">1. ALLOTJAMENT I SUPLEMENTS (IVA 10%)</span>
-      <button class="btn btn-add" data-i18n="btn_add_room">+ Afegir Habitació</button>
+      <button class="btn btn-add" onclick="afegirFila('body-allotjament','ALLOTJAMENT')" data-i18n="btn_add_room">+ Afegir Habitació</button>
     </div>
     <table><tbody id="body-allotjament"></tbody></table>
   </div>
@@ -110,7 +288,7 @@
   <div class="sec-wrapper">
     <div class="section-header">
       <span data-i18n="sec_rooms">2. SALES I EQUIPAMENTS (IVA 21%)</span>
-      <button class="btn btn-add" data-i18n="btn_add_room_eq">+ Afegir Sala / Equip</button>
+      <button class="btn btn-add" onclick="afegirFila('body-sales','SALES')" data-i18n="btn_add_room_eq">+ Afegir Sala / Equip</button>
     </div>
     <table><tbody id="body-sales"></tbody></table>
   </div>
@@ -118,21 +296,21 @@
   <div class="sec-wrapper">
     <div class="section-header">
       <span data-i18n="sec_catering">3. RESTAURACIÓ I CÀTERING (IVA 10%)</span>
-      <button class="btn btn-add" data-i18n="btn_add_catering">+ Afegir Servei Càtering</button>
+      <button class="btn btn-add" onclick="afegirFila('body-restauracio','RESTAURACIO')" data-i18n="btn_add_catering">+ Afegir Servei Càtering</button>
     </div>
     <table><tbody id="body-restauracio"></tbody></table>
   </div>
 
   <div class="tax-card" id="tax-card-block">
     <h4>
-      <input type="checkbox" id="tax-enable" style="width:16px; height:16px;">
+      <input type="checkbox" id="tax-enable" onchange="recalcular()" style="width:16px; height:16px;">
       <span data-i18n="tax_title">Taxa Turística</span>
     </h4>
     <div class="tax-grid" id="tax-controls">
-      <div><label data-i18n="tax_pax_label">Persones &gt; 17 anys:</label><input type="number" id="tax-pax" value="0" min="0"></div>
-      <div><label data-i18n="tax_nights_label">Nits a liquidar (Màx 7):</label><input type="number" id="tax-nits" value="0" min="0" max="7"></div>
-      <div><label data-i18n="tax_rate_label">Tarifa per Nit/Pax (IVA incl.):</label><input type="text" id="tax-rate-display" readonly="" style="background:#eef; font-weight:bold;"></div>
-      <div><label data-i18n="tax_total_label">Total Taxa Turística (10% IVA incl.):</label><input type="text" id="tax-total-display" readonly="" style="background:#eef; font-weight:bold; color:var(--primary);"></div>
+      <div><label data-i18n="tax_pax_label">Persones &gt; 17 anys:</label><input type="number" id="tax-pax" value="0" min="0" oninput="recalcular()"></div>
+      <div><label data-i18n="tax_nights_label">Nits a liquidar (Màx 7):</label><input type="number" id="tax-nits" value="0" min="0" max="7" oninput="recalcular()"></div>
+      <div><label data-i18n="tax_rate_label">Tarifa per Nit/Pax (IVA incl.):</label><input type="text" id="tax-rate-display" readonly style="background:#eef; font-weight:bold;"></div>
+      <div><label data-i18n="tax_total_label">Total Taxa Turística (10% IVA incl.):</label><input type="text" id="tax-total-display" readonly style="background:#eef; font-weight:bold; color:var(--primary);"></div>
     </div>
   </div>
 
@@ -140,28 +318,28 @@
     <div class="payment-schedule">
       <h4>
         <span data-i18n="title_payments">Calendari de Dipòsits i Pagaments</span>
-        <button class="btn btn-add" data-i18n="btn_add_deposit">+ Dipòsit Intermedi</button>
+        <button class="btn btn-add" onclick="afegirTramPagament()" data-i18n="btn_add_deposit">+ Dipòsit Intermedi</button>
       </h4>
       <div id="payment-rows-container"></div>
       <div id="pct-alert" class="pct-alert" data-i18n="pct_alert_msg">⚠️ Els dipòsits intermedis superen el total de la proforma!</div>
     </div>
     <div>
       <table class="totals-table">
-        <tbody><tr><td data-i18n="base_10_label">Base Imposable Allotj./Rest. (10%):</td><td id="base-10">0.00 €</td></tr>
+        <tr><td data-i18n="base_10_label">Base Imposable Allotj./Rest. (10%):</td><td id="base-10">0.00 €</td></tr>
         <tr><td data-i18n="vat_10_label">Quota IVA Allotj./Rest. (10%):</td><td id="iva-10">0.00 €</td></tr>
         <tr><td data-i18n="base_21_label">Base Imposable Sales/Equips (21%):</td><td id="base-21">0.00 €</td></tr>
         <tr><td data-i18n="vat_21_label">Quota IVA Sales/Equips (21%):</td><td id="iva-21">0.00 €</td></tr>
         <tr id="row-taxa-base" style="display:none; color:#555;"><td data-i18n="base_tax_label">Base Imposable Taxa Turística (10%):</td><td id="val-taxa-base">0.00 €</td></tr>
         <tr id="row-taxa-iva" style="display:none; color:#555;"><td data-i18n="vat_tax_label">Quota IVA Taxa Turística (10%):</td><td id="val-taxa-iva">0.00 €</td></tr>
         <tr class="grand-total"><td><strong data-i18n="total_proforma_label">TOTAL PROFORMA:</strong></td><td id="total-final"><strong>0.00 €</strong></td></tr>
-      </tbody></table>
+      </table>
     </div>
   </div>
 
   <div class="cancellation-section">
     <h4>
       <span data-i18n="title_cancellation">Terminis i Condicions de Cancel·lació de Grups</span>
-      <button class="btn btn-add" data-i18n="btn_add_cancellation">+ Afegir Tram Intermedi</button>
+      <button class="btn btn-add" onclick="afegirTramCancelacio('RANGE')" data-i18n="btn_add_cancellation">+ Afegir Tram Intermedi</button>
     </h4>
     <div id="canc-rows-container"></div>
   </div>
@@ -170,8 +348,8 @@
     <h4>
       <span id="bank-card-title-text" data-i18n="bank_title">💳 Dades Bancàries i Transferència</span>
       <span class="no-print">
-        <select id="payment-type-toggle" class="payment-type-select" style="font-size:11px; padding:3px 6px;">
-          <option value="BANK" selected="">🏦 Transferència Bancària</option>
+        <select id="payment-type-toggle" onchange="canviarTipusModalitatPagament(this.value)" class="payment-type-select" style="font-size:11px; padding:3px 6px;">
+          <option value="BANK" selected>🏦 Transferència Bancària</option>
           <option value="TPV">💳 TPV Virtual / Targeta de Crèdit</option>
         </select>
       </span>
@@ -183,12 +361,12 @@
     </div>
     <div id="tpv-details-box-block" class="tpv-details-box">
       <label data-i18n="tpv_url_label">🔗 Enllaç de Pagament Directe per Targeta (TPV Virtual):</label>
-      <input type="url" id="tpv-url-input" placeholder="https://tpv.redsys.es/...">
-      <a id="tpv-print-link-elem" href="#" class="tpv-print-link">-</a>
+      <input type="url" id="tpv-url-input" placeholder="https://tpv.redsys.es/..." oninput="sincronitzarUrlTpv(this.value)">
+      <a id="tpv-print-link-elem" href="#" target="_blank" class="tpv-print-link">-</a>
     </div>
     <div id="bank-notice-block" class="bank-notice">📌 <span id="bank-notice-text-elem" data-i18n="bank_concept_text">Cal indicar el número de proforma o nom del grup en el concepte de la transferència.</span></div>
     <div id="tax-disclaimer-text" class="tax-disclaimer" data-i18n="notes_tax_disclaimer"></div>
-    <textarea id="notes-textarea" placeholder="Observacions i comentaris addicionals..."></textarea>
+    <textarea id="notes-textarea" placeholder="Observacions i comentaris addicionals..." oninput="sincronitzarNotes(this.value)"></textarea>
     <div id="notes-print-box" class="print-notes-box"></div>
   </div>
 
@@ -206,9 +384,1134 @@
   </div>
 
   <div class="toolbar" style="margin-top:20px; justify-content:flex-end;">
-    <button id="btn-print" class="btn btn-print" data-i18n="btn_print">Imprimir / Generar PDF</button>
+    <button id="btn-print" class="btn btn-print" onclick="prepararNomIImprimir()" data-i18n="btn_print">Imprimir / Generar PDF</button>
   </div>
 </div>
 
+<script>
+/* =====================================================================
+   1) CONFIGURACIÓ — l'únic bloc que cal tocar
+   ===================================================================== */
+const CONFIG = {
+  masterPin: "SERHS2026@",
+  webappUrl: "https://script.google.com/macros/s/AKfycbxBttPfxYrXB2jWMqArZA5PvnOsXZOGyja7kWATUeeayZILlU94cKsE-vd61vS6mEV1xg/exec",
 
+  hotels: {
+    rivoli: {
+      code: "Rivoli", pin: "Rivoli2026@",
+      name: "Hotel SERHS Rivoli Rambla - Barcelona",
+      logo: "img/SHRivoli_RamblaH.jpg", logoWidth: 260, logoMaxHeight: 60,
+      palette: { "--primary":"#1b2a4a","--accent":"#c5a059","--tertiary":"#c5a059",
+                 "--section-bg":"#eef2f7","--control-bg":"#eef2f7","--tax-bg":"#f0f4f8","--tax-border":"#b8cce4",
+                 "--bank-bg":"#f4f6fa","--bank-border":"#d0d7de","--grand-bg":"#f0f4f8",
+                 "--pin-bg":"rgba(27,42,74,0.95)","--pin-hover":"#283c66","--header-border-w":"2px" },
+      headerLines: [
+        { k:"establiment", v:"La Rambla, 128 - 08002 Barcelona" },
+        { k:"rao_social",  v:'PASTUIRASER, S.L.U. | <strong>NIF:</strong> B64337827' },
+        { k:"dom_social",  v:"C/ Garbí, 88-90 - 08397 Pineda de Mar (Barcelona)" },
+        { k:"tel_hotel",   v:'+34 93 481 76 76 | <strong data-i18n="tel_reserves">Tel. Reserves:</strong> +34 93 481 76 53' },
+        { k:"email_hotel", v:'info.rivolirambla@grupserhs.com | <strong data-i18n="email_grups">Grups:</strong> grups.rivolirambla@grupserhs.com' }
+      ],
+      bank: { entity:"CAIXABANK", iban:"ES51 2100 3422 12 2210119441", swift:"CAIXESBBXXX" },
+      tax: { city:"Barcelona", rates:[ {from:null, rate:9.24}, {from:"2027-04-01", rate:10.34} ] },
+      defaultStaff: "Maite Ayora", staffAvatar: "img/MA.jpg", staffLayout: "row",
+      signatureImage: "img/signamn.png", requireStaffName: false, managers: null,
+      concepts: {
+        ca: { ALLOTJAMENT:[
+              {val:'DOBLE/TWIN ÚS DOBLE',text:'DOBLE/TWIN ÚS DOBLE'},{val:'DOBLE/TWIN ÚS INDIVIDUAL',text:'DOBLE/TWIN ÚS INDIVIDUAL'},
+              {val:'TRIPLE',text:'TRIPLE'},{val:'SUPERIOR',text:'SUPERIOR'},{val:'SUITE',text:'SUITE'},
+              {val:'SUPLEMENT HABITACIÓ',text:'SUPLEMENT HABITACIÓ'},{val:'SUPLEMENT MITJA PENSIÓ',text:'SUPLEMENT MITJA PENSIÓ'},
+              {val:'SUPLEMENT PENSIÓ COMPLETA',text:'SUPLEMENT PENSIÓ COMPLETA'},{val:'SUPLEMENT ESMORZAR PICNIC',text:'SUPLEMENT ESMORZAR PICNIC'},
+              {val:'CUSTOM',text:'ALTRE (Escriure concepte...)'} ],
+            SALES:[ {val:'SALA DE REUNIONS',text:'SALA DE REUNIONS'},{val:'MATERIAL AUDIOVISUAL',text:'MATERIAL AUDIOVISUAL'},{val:'CUSTOM',text:'ALTRE (Escriure concepte...)'} ],
+            RESTAURACIO:[ {val:'COFFEE BREAK',text:'COFFEE BREAK'},{val:'DINAR DE TREBALL',text:'DINAR DE TREBALL'},{val:'CÒCTEL DE BENVINGUDA',text:'CÒCTEL DE BENVINGUDA'},{val:'SOPAR DE GRUP',text:'SOPAR DE GRUP'},{val:'CUSTOM',text:'ALTRE (Escriure concepte...)'} ] },
+        es: { ALLOTJAMENT:[
+              {val:'DOBLE/TWIN USO DOBLE',text:'DOBLE/TWIN USO DOBLE'},{val:'DOBLE/TWIN USO INDIVIDUAL',text:'DOBLE/TWIN USO INDIVIDUAL'},
+              {val:'TRIPLE',text:'TRIPLE'},{val:'SUPERIOR',text:'SUPERIOR'},{val:'SUITE',text:'SUITE'},
+              {val:'SUPLEMENTO HABITACIÓN',text:'SUPLEMENTO HABITACIÓN'},{val:'SUPLEMENTO MEDIA PENSIÓN',text:'SUPLEMENTO MEDIA PENSIÓN'},
+              {val:'SUPLEMENTO PENSIÓN COMPLETA',text:'SUPLEMENTO PENSIÓN COMPLETA'},{val:'SUPLEMENTO DESAYUNO PICNIC',text:'SUPLEMENTO DESAYUNO PICNIC'},
+              {val:'CUSTOM',text:'OTRO (Escribir concepto...)'} ],
+            SALES:[ {val:'SALA DE REUNIÓN',text:'SALA DE REUNIÓN'},{val:'MATERIAL AUDIOVISUAL',text:'MATERIAL AUDIOVISUAL'},{val:'CUSTOM',text:'OTRO (Escribir concepto...)'} ],
+            RESTAURACIO:[ {val:'COFFEE BREAK',text:'COFFEE BREAK'},{val:'ALMUERZO DE TRABAJO',text:'ALMUERZO DE TRABAJO'},{val:'CÓCTEL DE BIENVENIDA',text:'CÓCTEL DE BIENVENIDA'},{val:'CENA DE GRUPO',text:'CENA DE GRUPO'},{val:'CUSTOM',text:'OTRO (Escribir concepto...)'} ] },
+        en: { ALLOTJAMENT:[
+              {val:'DOUBLE/TWIN DOUBLE USE',text:'DOUBLE/TWIN DOUBLE USE'},{val:'DOUBLE/TWIN SINGLE USE',text:'DOUBLE/TWIN SINGLE USE'},
+              {val:'TRIPLE ROOM',text:'TRIPLE ROOM'},{val:'SUPERIOR ROOM',text:'SUPERIOR ROOM'},{val:'SUITE',text:'SUITE'},
+              {val:'ROOM SUPPLEMENT',text:'ROOM SUPPLEMENT'},{val:'HALF BOARD SUPPLEMENT',text:'HALF BOARD SUPPLEMENT'},
+              {val:'FULL BOARD SUPPLEMENT',text:'FULL BOARD SUPPLEMENT'},{val:'PICNIC BREAKFAST SUPPLEMENT',text:'PICNIC BREAKFAST SUPPLEMENT'},
+              {val:'CUSTOM',text:'OTHER (Custom concept...)'} ],
+            SALES:[ {val:'MEETING ROOM',text:'MEETING ROOM'},{val:'AUDIOVISUAL EQUIPMENT',text:'AUDIOVISUAL EQUIPMENT'},{val:'CUSTOM',text:'OTHER (Custom concept...)'} ],
+            RESTAURACIO:[ {val:'COFFEE BREAK',text:'COFFEE BREAK'},{val:'WORKING LUNCH',text:'WORKING LUNCH'},{val:'WELCOME COCKTAIL',text:'WELCOME COCKTAIL'},{val:'GROUP DINNER',text:'GROUP DINNER'},{val:'CUSTOM',text:'OTHER (Custom concept...)'} ] },
+        fr: { ALLOTJAMENT:[
+              {val:'DOUBLE/TWIN USAGE DOUBLE',text:'DOUBLE/TWIN USAGE DOUBLE'},{val:'DOUBLE/TWIN USAGE INDIVIDUEL',text:'DOUBLE/TWIN USAGE INDIVIDUEL'},
+              {val:'CHAMBRE TRIPLE',text:'CHAMBRE TRIPLE'},{val:'CHAMBRE SUPÉRIEURE',text:'CHAMBRE SUPÉRIEURE'},{val:'SUITE',text:'SUITE'},
+              {val:'SUPPLÉMENT CHAMBRE',text:'SUPPLÉMENT CHAMBRE'},{val:'SUPPLÉMENT DEMI-PENSION',text:'SUPPLÉMENT DEMI-PENSION'},
+              {val:'SUPPLÉMENT PENSION COMPLÈTE',text:'SUPPLÉMENT PENSION COMPLÈTE'},{val:'SUPPLÉMENT PETIT-DÉJEUNER PIC-NIC',text:'SUPPLÉMENT PETIT-DÉJEUNER PIC-NIC'},
+              {val:'CUSTOM',text:'AUTRE (Saisir concept...)'} ],
+            SALES:[ {val:'SALLE DE RÉUNION',text:'SALLE DE RÉUNION'},{val:'MATÉRIEL AUDIOVISUEL',text:'MATÉRIEL AUDIOVISUEL'},{val:'CUSTOM',text:'AUTRE (Saisir concept...)'} ],
+            RESTAURACIO:[ {val:'PAUSE CAFÉ / COFFEE BREAK',text:'PAUSE CAFÉ / COFFEE BREAK'},{val:'DÉJEUNER DE TRAVAIL',text:'DÉJEUNER DE TRAVAIL'},{val:'COCKTAIL DE BIENVENUE',text:'COCKTAIL DE BIENVENUE'},{val:'DÎNER DE GROUPE',text:'DÎNER DE GROUPE'},{val:'CUSTOM',text:'AUTRE (Saisir concept...)'} ] }
+      }
+    },
 
+    delport: {
+      code: "DelPort", pin: "Delport2026@",
+      name: "Hotel SERHS del Port - Barcelona",
+      logo: "img/Logo Serhs del Port Horitzontal.png", logoWidth: 320, logoMaxHeight: 95,
+      palette: { "--primary":"#1b2a4a","--accent":"#c5a059","--tertiary":"#c5a059",
+                 "--section-bg":"#eef2f7","--control-bg":"#eef2f7","--tax-bg":"#f0f4f8","--tax-border":"#b8cce4",
+                 "--bank-bg":"#f4f6fa","--bank-border":"#d0d7de","--grand-bg":"#f0f4f8",
+                 "--pin-bg":"rgba(27,42,74,0.95)","--pin-hover":"#283c66","--header-border-w":"2px" },
+      headerLines: [
+        { k:"establiment", v:"Avinguda del Paral·lel, 40 - 08001 Barcelona" },
+        { k:"rao_social",  v:'PASTUIRASER, S.L.U. | <strong>NIF:</strong> B64337827' },
+        { k:"dom_social",  v:"C/ Garbí, 88-90 - 08397 Pineda de Mar (Barcelona)" },
+        { k:"tel_hotel",   v:"+34 93 230 85 00" },
+        { k:"email_hotel", v:"info.delport@grupserhs.com" }
+      ],
+      bank: { entity:"CAIXABANK", iban:"ES51 2100 3422 12 2210119441", swift:"CAIXESBBXXX" },
+      tax: { city:"Barcelona", rates:[ {from:null, rate:7.70}, {from:"2027-04-01", rate:8.80} ] },
+      defaultStaff: "", staffAvatar: null, staffLayout: "column",
+      signatureImage: null, requireStaffName: true, managers: null,
+      concepts: {
+        ca: { ALLOTJAMENT:[ {val:'DOBLE/TWIN',text:'DOBLE/TWIN'},{val:'SINGLE/DUI',text:'SINGLE/DUI'},{val:'TRIPLE',text:'TRIPLE'},{val:'SUPLEMENT HABITACIÓ',text:'SUPLEMENT HABITACIÓ'},{val:'SUPLEMENT ESMORZAR PICNIC',text:'SUPLEMENT ESMORZAR PICNIC'},{val:'CUSTOM',text:'ALTRE (Escriure concepte...)'} ],
+              SALES:[ {val:'SALA DE REUNIONS',text:'SALA DE REUNIONS'},{val:'MATERIAL AUDIOVISUAL',text:'MATERIAL AUDIOVISUAL'},{val:'CUSTOM',text:'ALTRE (Escriure concepte...)'} ],
+              RESTAURACIO:[ {val:'COFFEE BREAK',text:'COFFEE BREAK'},{val:'DINAR DE TREBALL',text:'DINAR DE TREBALL'},{val:'CÒCTEL DE BENVINGUDA',text:'CÒCTEL DE BENVINGUDA'},{val:'SOPAR DE GRUP',text:'SOPAR DE GRUP'},{val:'CUSTOM',text:'ALTRE (Escriure concepte...)'} ] },
+        es: { ALLOTJAMENT:[ {val:'DOBLE/TWIN',text:'DOBLE/TWIN'},{val:'SINGLE/DUI',text:'SINGLE/DUI'},{val:'TRIPLE',text:'TRIPLE'},{val:'SUPLEMENTO HABITACIÓN',text:'SUPLEMENTO HABITACIÓN'},{val:'SUPLEMENTO DESAYUNO PICNIC',text:'SUPLEMENTO DESAYUNO PICNIC'},{val:'CUSTOM',text:'OTRO (Escribir concepto...)'} ],
+              SALES:[ {val:'SALA DE REUNIÓN',text:'SALA DE REUNIÓN'},{val:'MATERIAL AUDIOVISUAL',text:'MATERIAL AUDIOVISUAL'},{val:'CUSTOM',text:'OTRO (Escribir concepto...)'} ],
+              RESTAURACIO:[ {val:'COFFEE BREAK',text:'COFFEE BREAK'},{val:'ALMUERZO DE TRABAJO',text:'ALMUERZO DE TRABAJO'},{val:'CÓCTEL DE BIENVENIDA',text:'CÓCTEL DE BIENVENIDA'},{val:'CENA DE GRUPO',text:'CENA DE GRUPO'},{val:'CUSTOM',text:'OTRO (Escribir concepto...)'} ] },
+        en: { ALLOTJAMENT:[ {val:'DOUBLE/TWIN',text:'DOUBLE/TWIN'},{val:'SINGLE/DUI',text:'SINGLE/DUI'},{val:'TRIPLE ROOM',text:'TRIPLE ROOM'},{val:'ROOM SUPPLEMENT',text:'ROOM SUPPLEMENT'},{val:'PICNIC BREAKFAST SUPPLEMENT',text:'PICNIC BREAKFAST SUPPLEMENT'},{val:'CUSTOM',text:'OTHER (Custom concept...)'} ],
+              SALES:[ {val:'MEETING ROOM',text:'MEETING ROOM'},{val:'AUDIOVISUAL EQUIPMENT',text:'AUDIOVISUAL EQUIPMENT'},{val:'CUSTOM',text:'OTHER (Custom concept...)'} ],
+              RESTAURACIO:[ {val:'COFFEE BREAK',text:'COFFEE BREAK'},{val:'WORKING LUNCH',text:'WORKING LUNCH'},{val:'WELCOME COCKTAIL',text:'WELCOME COCKTAIL'},{val:'GROUP DINNER',text:'GROUP DINNER'},{val:'CUSTOM',text:'OTHER (Custom concept...)'} ] },
+        fr: { ALLOTJAMENT:[ {val:'DOUBLE/TWIN',text:'DOUBLE/TWIN'},{val:'SINGLE/DUI',text:'SINGLE/DUI'},{val:'CHAMBRE TRIPLE',text:'CHAMBRE TRIPLE'},{val:'SUPPLÉMENT CHAMBRE',text:'SUPPLÉMENT CHAMBRE'},{val:'SUPPLÉMENT PETIT-DÉJEUNER PIC-NIC',text:'SUPPLÉMENT PETIT-DÉJEUNER PIC-NIC'},{val:'CUSTOM',text:'AUTRE (Saisir concept...)'} ],
+              SALES:[ {val:'SALLE DE RÉUNION',text:'SALLE DE RÉUNION'},{val:'MATÉRIEL AUDIOVISUEL',text:'MATÉRIEL AUDIOVISUEL'},{val:'CUSTOM',text:'AUTRE (Saisir concept...)'} ],
+              RESTAURACIO:[ {val:'PAUSE CAFÉ / COFFEE BREAK',text:'PAUSE CAFÉ / COFFEE BREAK'},{val:'DÉJEUNER DE TRAVAIL',text:'DÉJEUNER DE TRAVAIL'},{val:'COCKTAIL DE BIENVENUE',text:'COCKTAIL DE BIENVENUE'},{val:'DÎNER DE GROUPE',text:'DÎNER DE GROUPE'},{val:'CUSTOM',text:'AUTRE (Saisir concept...)'} ] }
+      }
+    },
+
+    carlit: {
+      code: "Carlit", pin: "Carlit2026@",
+      name: "Hotel SERHS Carlit - Barcelona",
+      logo: "img/Serhs_Boutique_Hotel_Carlit_2480x827.jpg", logoWidth: 320, logoMaxHeight: 90,
+      palette: { "--primary":"#1b2a4a","--accent":"#c5a059","--tertiary":"#c5a059",
+                 "--section-bg":"#eef2f7","--control-bg":"#eef2f7","--tax-bg":"#f0f4f8","--tax-border":"#b8cce4",
+                 "--bank-bg":"#f4f6fa","--bank-border":"#d0d7de","--grand-bg":"#f0f4f8",
+                 "--pin-bg":"rgba(27,42,74,0.95)","--pin-hover":"#283c66","--header-border-w":"2px" },
+      headerLines: [
+        { k:"establiment", v:"C/ Diputació, 383 - 08013 Barcelona" },
+        { k:"rao_social",  v:'PASTUIRASER, S.L.U. | <strong>NIF:</strong> B64337827' },
+        { k:"dom_social",  v:"C/ Garbí, 88-90 - 08397 Pineda de Mar (Barcelona)" },
+        { k:"tel_hotel",   v:"+34 93 505 26 00" },
+        { k:"email_hotel", v:"info.carlit@grupserhs.com" }
+      ],
+      bank: { entity:"CAIXABANK", iban:"ES51 2100 3422 12 2210119441", swift:"CAIXESBBXXX" },
+      tax: { city:"Barcelona", rates:[ {from:null, rate:7.70}, {from:"2027-04-01", rate:8.80} ] },
+      defaultStaff: "", staffAvatar: null, staffLayout: "column",
+      signatureImage: null, requireStaffName: true, managers: null,
+      concepts: {
+        ca: { ALLOTJAMENT:[ {val:'INDIVIDUAL PETITA',text:'INDIVIDUAL PETITA'},{val:'DOBLE PETITA',text:'DOBLE PETITA'},{val:'DOBLE/TWIN COMFORT',text:'DOBLE/TWIN COMFORT'},{val:'DOBLE COMFORT AMB BALCÓ',text:'DOBLE COMFORT AMB BALCÓ'},{val:'TRIPLE COMFORT',text:'TRIPLE COMFORT'},{val:'SUPLEMENT HABITACIÓ',text:'SUPLEMENT HABITACIÓ'},{val:'SUPLEMENT ESMORZAR PICNIC',text:'SUPLEMENT ESMORZAR PICNIC'},{val:'CUSTOM',text:'ALTRE (Escriure concepte...)'} ],
+              SALES:[ {val:'SALA DE REUNIONS',text:'SALA DE REUNIONS'},{val:'MATERIAL AUDIOVISUAL',text:'MATERIAL AUDIOVISUAL'},{val:'CUSTOM',text:'ALTRE (Escriure concepte...)'} ],
+              RESTAURACIO:[ {val:'COFFEE BREAK',text:'COFFEE BREAK'},{val:'DINAR DE TREBALL',text:'DINAR DE TREBALL'},{val:'CÒCTEL DE BENVINGUDA',text:'CÒCTEL DE BENVINGUDA'},{val:'SOPAR DE GRUP',text:'SOPAR DE GRUP'},{val:'CUSTOM',text:'ALTRE (Escriure concepte...)'} ] },
+        es: { ALLOTJAMENT:[ {val:'INDIVIDUAL PEQUEÑA',text:'INDIVIDUAL PEQUEÑA'},{val:'DOBLE PEQUEÑA',text:'DOBLE PEQUEÑA'},{val:'DOBLE/TWIN COMFORT',text:'DOBLE/TWIN COMFORT'},{val:'DOBLE COMFORT CON BALCÓN',text:'DOBLE COMFORT CON BALCÓN'},{val:'TRIPLE COMFORT',text:'TRIPLE COMFORT'},{val:'SUPLEMENTO HABITACIÓN',text:'SUPLEMENTO HABITACIÓN'},{val:'SUPLEMENTO DESAYUNO PICNIC',text:'SUPLEMENTO DESAYUNO PICNIC'},{val:'CUSTOM',text:'OTRO (Escribir concepto...)'} ],
+              SALES:[ {val:'SALA DE REUNIÓN',text:'SALA DE REUNIÓN'},{val:'MATERIAL AUDIOVISUAL',text:'MATERIAL AUDIOVISUAL'},{val:'CUSTOM',text:'OTRO (Escribir concepto...)'} ],
+              RESTAURACIO:[ {val:'COFFEE BREAK',text:'COFFEE BREAK'},{val:'ALMUERZO DE TRABAJO',text:'ALMUERZO DE TRABAJO'},{val:'CÓCTEL DE BIENVENIDA',text:'CÓCTEL DE BIENVENIDA'},{val:'CENA DE GRUPO',text:'CENA DE GRUPO'},{val:'CUSTOM',text:'OTRO (Escribir concepto...)'} ] },
+        en: { ALLOTJAMENT:[ {val:'SMALL SINGLE ROOM',text:'SMALL SINGLE ROOM'},{val:'SMALL DOUBLE ROOM',text:'SMALL DOUBLE ROOM'},{val:'DOUBLE/TWIN COMFORT',text:'DOUBLE/TWIN COMFORT'},{val:'DOUBLE COMFORT WITH BALCONY',text:'DOUBLE COMFORT WITH BALCONY'},{val:'TRIPLE COMFORT ROOM',text:'TRIPLE COMFORT ROOM'},{val:'ROOM SUPPLEMENT',text:'ROOM SUPPLEMENT'},{val:'PICNIC BREAKFAST SUPPLEMENT',text:'PICNIC BREAKFAST SUPPLEMENT'},{val:'CUSTOM',text:'OTHER (Custom concept...)'} ],
+              SALES:[ {val:'MEETING ROOM',text:'MEETING ROOM'},{val:'AUDIOVISUAL EQUIPMENT',text:'AUDIOVISUAL EQUIPMENT'},{val:'CUSTOM',text:'OTHER (Custom concept...)'} ],
+              RESTAURACIO:[ {val:'COFFEE BREAK',text:'COFFEE BREAK'},{val:'WORKING LUNCH',text:'WORKING LUNCH'},{val:'WELCOME COCKTAIL',text:'WELCOME COCKTAIL'},{val:'GROUP DINNER',text:'GROUP DINNER'},{val:'CUSTOM',text:'OTHER (Custom concept...)'} ] },
+        fr: { ALLOTJAMENT:[ {val:'PETITE SINGLE',text:'PETITE SINGLE'},{val:'PETITE DOUBLE',text:'PETITE DOUBLE'},{val:'DOUBLE/TWIN COMFORT',text:'DOUBLE/TWIN COMFORT'},{val:'DOUBLE COMFORT AVEC BALCON',text:'DOUBLE COMFORT AVEC BALCON'},{val:'TRIPLE COMFORT',text:'TRIPLE COMFORT'},{val:'SUPPLÉMENT CHAMBRE',text:'SUPPLÉMENT CHAMBRE'},{val:'SUPPLÉMENT PETIT-DÉJEUNER PIC-NIC',text:'SUPPLÉMENT PETIT-DÉJEUNER PIC-NIC'},{val:'CUSTOM',text:'AUTRE (Saisir concept...)'} ],
+              SALES:[ {val:'SALLE DE RÉUNION',text:'SALLE DE RÉUNION'},{val:'MATÉRIEL AUDIOVISUEL',text:'MATÉRIEL AUDIOVISUEL'},{val:'CUSTOM',text:'AUTRE (Saisir concept...)'} ],
+              RESTAURACIO:[ {val:'PAUSE CAFÉ / COFFEE BREAK',text:'PAUSE CAFÉ / COFFEE BREAK'},{val:'DÉJEUNER DE TRAVAIL',text:'DÉJEUNER DE TRAVAIL'},{val:'COCKTAIL DE BIENVENUE',text:'COCKTAIL DE BIENVENUE'},{val:'DÎNER DE GROUPE',text:'DÎNER DE GROUPE'},{val:'CUSTOM',text:'AUTRE (Saisir concept...)'} ] }
+      }
+    },
+
+    santhilari: {
+      code: "SantHilari", pin: "Comercial2026@",
+      name: "Vilar Rural de Sant Hilari Sacalm",
+      logo: "img/logovshbyshnofons.png", logoWidth: 320, logoMaxHeight: 95,
+      palette: { "--primary":"#3c704c","--accent":"#b5c934","--tertiary":"#e2983d",
+                 "--section-bg":"#f1f6ed","--control-bg":"#f2f7f0","--tax-bg":"#f5f8f3","--tax-border":"#c3d9cb",
+                 "--bank-bg":"#f5f8f3","--bank-border":"#c3d9cb","--grand-bg":"#f1f6ed",
+                 "--pin-bg":"rgba(60,112,76,0.95)","--pin-hover":"#2a5237","--header-border-w":"3px" },
+      headerLines: [
+        { k:"establiment", v:"Camí de Reixac, s/n (Ctra. GI-541, km 9 - Variant Font Vella) - 17403 Sant Hilari Sacalm (Girona)" },
+        { k:"rao_social",  v:'Montsenyser S.L. | <strong>NIF:</strong> B-61998365' },
+        { k:"dom_social",  v:"C/ Garbí, 88-90 - 08397 Pineda de Mar (Barcelona)" },
+        { k:"tel_hotel",   v:'+34 972 872 820 | <strong data-i18n="tel_gestor">Tel. Gestor:</strong> <span id="hdr-phone-val">+34 93 419 36 77 (opció 2)</span>' },
+        { k:"email_hotel", v:"comercial.hotels@grupserhs.com" }
+      ],
+      bank: { entity:"CAIXABANK", iban:"ES10 2100 3422 1122 1004 8545", swift:"CAIXESBBXXX" },
+      tax: { city:"Sant Hilari Sacalm", rates:[ {from:null, rate:1.98}, {from:"2027-04-01", rate:2.64} ] },
+      defaultStaff: "", staffAvatar: null, staffLayout: "column",
+      signatureImage: "img/segell.png", requireStaffName: false,
+      managers: {
+        JM: { name:"Joan Munné", role:"Groups Controller", phone:"+34 93 419 36 77 (opció 2)", photo:"img/JM.png", isInitials:false },
+        MN: { name:"Miquel Navarro", role:"Gestor de grups", phone:"+34 93 419 36 77 (opció 4)", photo:"img/MN.jpg", isInitials:false },
+        EG: { name:"Equip de Grups", role:"Atenció a Grups i Esdeveniments", phone:"+34 93 419 36 77", initials:"EG", isInitials:true }
+      },
+      concepts: {
+        ca: { ALLOTJAMENT:[ {val:'HABITACIÓ ESTÀNDARD',text:'HABITACIÓ ESTÀNDARD'},{val:'HABITACIÓ FAMILIAR',text:'HABITACIÓ FAMILIAR'},{val:'SUITE RURAL',text:'SUITE RURAL'},{val:'SUPLEMENT MITJA PENSIÓ',text:'SUPLEMENT MITJA PENSIÓ'},{val:'SUPLEMENT PENSIÓ COMPLETA',text:'SUPLEMENT PENSIÓ COMPLETA'},{val:'CUSTOM',text:'ALTRE (Escriure concepte...)'} ],
+              SALES:[ {val:'SALA DE REUNIONS / MULTIUSOS',text:'SALA DE REUNIONS / MULTIUSOS'},{val:'MATERIAL AUDIOVISUAL',text:'MATERIAL AUDIOVISUAL'},{val:'CUSTOM',text:'ALTRE (Escriure concepte...)'} ],
+              RESTAURACIO:[ {val:'COFFEE BREAK',text:'COFFEE BREAK'},{val:'DINAR RURAL / TREBALL',text:'DINAR RURAL / TREBALL'},{val:'SOPAR DE GRUP',text:'SOPAR DE GRUP'},{val:'CUSTOM',text:'ALTRE (Escriure concepte...)'} ] },
+        es: { ALLOTJAMENT:[ {val:'HABITACIÓN ESTÁNDAR',text:'HABITACIÓN ESTÁNDAR'},{val:'HABITACIÓN FAMILIAR',text:'HABITACIÓN FAMILIAR'},{val:'SUITE RURAL',text:'SUITE RURAL'},{val:'SUPLEMENTO MEDIA PENSIÓN',text:'SUPLEMENTO MEDIA PENSIÓN'},{val:'SUPLEMENTO PENSIÓN COMPLETA',text:'SUPLEMENTO PENSIÓN COMPLETA'},{val:'CUSTOM',text:'OTRO (Escribir concepto...)'} ],
+              SALES:[ {val:'SALA DE REUNIONES / MULTIUSOS',text:'SALA DE REUNIONES / MULTIUSOS'},{val:'MATERIAL AUDIOVISUAL',text:'MATERIAL AUDIOVISUAL'},{val:'CUSTOM',text:'OTRO (Escribir concepto...)'} ],
+              RESTAURACIO:[ {val:'COFFEE BREAK',text:'COFFEE BREAK'},{val:'ALMUERZO RURAL / TRABAJO',text:'ALMUERZO RURAL / TRABAJO'},{val:'CENA DE GRUPO',text:'CENA DE GRUPO'},{val:'CUSTOM',text:'OTRO (Escribir concepto...)'} ] },
+        en: { ALLOTJAMENT:[ {val:'STANDARD ROOM',text:'STANDARD ROOM'},{val:'FAMILY ROOM',text:'FAMILY ROOM'},{val:'RURAL SUITE',text:'RURAL SUITE'},{val:'HALF BOARD SUPPLEMENT',text:'HALF BOARD SUPPLEMENT'},{val:'FULL BOARD SUPPLEMENT',text:'FULL BOARD SUPPLEMENT'},{val:'CUSTOM',text:'OTHER (Custom concept...)'} ],
+              SALES:[ {val:'MEETING / MULTIPURPOSE ROOM',text:'MEETING / MULTIPURPOSE ROOM'},{val:'AUDIOVISUAL EQUIPMENT',text:'AUDIOVISUAL EQUIPMENT'},{val:'CUSTOM',text:'OTHER (Custom concept...)'} ],
+              RESTAURACIO:[ {val:'COFFEE BREAK',text:'COFFEE BREAK'},{val:'RURAL / WORKING LUNCH',text:'RURAL / WORKING LUNCH'},{val:'GROUP DINNER',text:'GROUP DINNER'},{val:'CUSTOM',text:'OTHER (Custom concept...)'} ] },
+        fr: { ALLOTJAMENT:[ {val:'CHAMBRE STANDARD',text:'CHAMBRE STANDARD'},{val:'CHAMBRE FAMILIALE',text:'CHAMBRE FAMILIALE'},{val:'SUITE RURALE',text:'SUITE RURALE'},{val:'SUPPLÉMENT DEMI-PENSION',text:'SUPPLÉMENT DEMI-PENSION'},{val:'SUPPLÉMENT PENSION COMPLÈTE',text:'SUPPLÉMENT PENSION COMPLÈTE'},{val:'CUSTOM',text:'AUTRE (Saisir concept...)'} ],
+              SALES:[ {val:'SALLE DE RÉUNION / POLYVALENTE',text:'SALLE DE RÉUNION / POLYVALENTE'},{val:'MATÉRIEL AUDIOVISUEL',text:'MATÉRIEL AUDIOVISUEL'},{val:'CUSTOM',text:'AUTRE (Saisir concept...)'} ],
+              RESTAURACIO:[ {val:'PAUSE CAFÉ / COFFEE BREAK',text:'PAUSE CAFÉ / COFFEE BREAK'},{val:'DÉJEUNER CHAMPÊTRE / TRAVAIL',text:'DÉJEUNER CHAMPÊTRE / TRAVAIL'},{val:'DÎNER DE GROUPE',text:'DÎNER DE GROUPE'},{val:'CUSTOM',text:'AUTRE (Saisir concept...)'} ] }
+      }
+    }
+  }
+};
+
+/* =====================================================================
+   2) RESOLUCIÓ DEL MODE I DEL HOTEL
+   ===================================================================== */
+const HOTEL_KEYS = Object.keys(CONFIG.hotels);
+const params = new URLSearchParams(location.search);
+let hotelKeyFromUrl = null;
+const rawH = params.get("h");
+if (rawH) {
+  const k = rawH.toLowerCase();
+  if (CONFIG.hotels[k]) hotelKeyFromUrl = k;
+  else {
+    const found = HOTEL_KEYS.find(x => CONFIG.hotels[x].code.toLowerCase() === k);
+    if (found) hotelKeyFromUrl = found;
+  }
+}
+const MODE = hotelKeyFromUrl ? "locked" : "central";
+let currentHotelKey = hotelKeyFromUrl || HOTEL_KEYS[0];
+let HOTEL_CODE = "", CORRECT_PIN = "", currentLang = "ca", currentManagerKey = "JM", globalProformasDB = {};
+const GOOGLE_SCRIPT_URL = CONFIG.webappUrl;
+function cfg() { return CONFIG.hotels[currentHotelKey]; }
+
+/* =====================================================================
+   3) UTILITATS
+   ===================================================================== */
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m])); }
+function avuiISO() { const d = new Date(); return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
+function formatDate(d) { if (!d || isNaN(d)) return "dd/mm/aaaa"; return String(d.getDate()).padStart(2,"0") + "/" + String(d.getMonth()+1).padStart(2,"0") + "/" + d.getFullYear(); }
+function categoriaDeTbody(id) { return id === "body-sales" ? "SALES" : id === "body-restauracio" ? "RESTAURACIO" : "ALLOTJAMENT"; }
+function opcions(cat) { return cfg().concepts[currentLang][cat]; }
+
+/* =====================================================================
+   4) PIN I SESSIÓ
+   ===================================================================== */
+function clauSessio() { return MODE === "locked" ? "proforma_auth_" + currentHotelKey : "proforma_auth_master"; }
+function validarPin() {
+  const pinInput = document.getElementById("pin-input");
+  const errorMsg = document.getElementById("pin-error-msg");
+  const esperat = MODE === "locked" ? cfg().pin : CONFIG.masterPin;
+  if (pinInput && pinInput.value.trim() === esperat) {
+    sessionStorage.setItem(clauSessio(), "true");
+    document.getElementById("pin-lock-overlay").style.display = "none";
+    if (errorMsg) errorMsg.style.display = "none";
+    arrencar();
+  } else if (errorMsg) {
+    errorMsg.style.display = "block";
+    if (pinInput) { pinInput.value = ""; pinInput.focus(); }
+  }
+}
+function tancarSessio() { sessionStorage.removeItem(clauSessio()); location.reload(); }
+
+/* =====================================================================
+   5) APLICAR CONFIGURACIÓ D'HOTEL
+   ===================================================================== */
+function aplicarHotel(key) {
+  currentHotelKey = key;
+  const c = cfg();
+  HOTEL_CODE = c.code;
+  CORRECT_PIN = c.pin;
+  currentManagerKey = c.managers ? Object.keys(c.managers)[0] : null;
+
+  document.title = "Proforma Grups - " + c.name;
+  document.getElementById("pin-hotel-name").textContent = c.name;
+
+  if (c.palette) Object.keys(c.palette).forEach(k => document.documentElement.style.setProperty(k, c.palette[k]));
+
+  const logo = document.getElementById("hdr-logo");
+  logo.src = c.logo; logo.alt = c.name;
+  logo.style.width = (c.logoWidth || 320) + "px";
+  logo.style.maxHeight = (c.logoMaxHeight || 95) + "px";
+
+  document.getElementById("hdr-lines").innerHTML = c.headerLines
+    .map(l => `<p><strong data-i18n="${l.k}">${esc(l.k)}:</strong> ${l.v}</p>`).join("");
+
+  document.getElementById("bank-entity").textContent = c.bank.entity;
+  document.getElementById("bank-iban").textContent = c.bank.iban;
+  document.getElementById("bank-swift").textContent = c.bank.swift;
+
+  document.getElementById("hotel-badge").textContent = "🏨 " + c.name;
+  document.getElementById("hotel-badge").style.display = MODE === "locked" ? "inline-block" : "none";
+  document.getElementById("hotel-select").style.display = MODE === "locked" ? "none" : "inline-block";
+
+  const mWrap = document.getElementById("manager-select-wrap");
+  const mSel = document.getElementById("manager-select");
+  if (c.managers) {
+    mWrap.style.display = "inline-flex";
+    mSel.innerHTML = Object.keys(c.managers).map(k => `<option value="${k}">${esc(c.managers[k].name)}</option>`).join("");
+    mSel.value = currentManagerKey;
+  } else { mWrap.style.display = "none"; }
+
+  construirBlocSignatura(c);
+  canviarIdioma(currentLang);
+}
+
+function canviarHotel(key) {
+  if (!CONFIG.hotels[key]) return;
+  aplicarHotel(key);
+  actualitzarDesplegableProformes();
+  carregarEsborrany();
+}
+
+function construirBlocSignatura(c) {
+  const box = document.getElementById("hotel-signature-box");
+  let html = "";
+  if (c.managers) {
+    html += `<div class="contact-person manager-mode" id="manager-box-container"></div>`;
+  } else {
+    const row = c.staffLayout === "row" ? " layout-row" : "";
+    html += `<div class="contact-person${row}">
+      ${c.staffAvatar ? `<img src="${c.staffAvatar}" alt="" class="avatar-manager">` : ""}
+      <div style="${c.staffLayout === "row" ? "flex:1;min-width:0;" : ""}">
+        <input type="text" id="staff-name-input" class="staff-name-input" placeholder="Nom i Cognom del Responsable"
+               value="${esc(c.defaultStaff || "")}" oninput="sincronitzarNomResponsable(this.value)">
+        <span id="staff-name-display" class="staff-name-display">${esc(c.defaultStaff || "-")}</span>
+        <div class="contact-info">
+          <p data-i18n="hotel_dept">Departament de reserves, grups i esdeveniments</p>
+          <p>${esc(c.name)}</p>
+        </div>
+      </div>
+    </div>`;
+  }
+  if (c.signatureImage) {
+    html += `<div class="signature-box" style="margin-top:5px;"><img src="${c.signatureImage}" alt="Signatura i Segell" class="img-sign"></div>`;
+  } else {
+    html += `<div class="signature-box" style="margin-top:15px;"><div style="height:60px;border-bottom:1px dashed #ccc;width:220px;margin:0 auto;position:relative;"><span style="position:absolute;bottom:2px;right:5px;font-size:10px;color:#999;" data-i18n="hotel_seal_label">Signatura i Segell Hotel</span></div></div>`;
+  }
+  box.innerHTML = html;
+  if (c.managers) renderManager();
+}
+
+function renderManager() {
+  const c = cfg();
+  const cont = document.getElementById("manager-box-container");
+  if (!cont || !c.managers) return;
+  const m = c.managers[currentManagerKey] || c.managers[Object.keys(c.managers)[0]];
+  const avatar = m.isInitials
+    ? `<div class="avatar-initials">${esc(m.initials)}</div>`
+    : `<img src="${m.photo}" alt="${esc(m.name)}" class="avatar-manager">`;
+  cont.innerHTML = `${avatar}
+    <div class="contact-info">
+      <p class="name">${esc(m.name)}</p>
+      <p style="font-weight:bold;color:#555;">${esc(m.role)}</p>
+      <p data-i18n="hotel_dept">Departament de reserves, grups i esdeveniments</p>
+      <p>${esc(c.name)}</p>
+    </div>`;
+  const pv = document.getElementById("hdr-phone-val");
+  if (pv) pv.textContent = m.phone;
+}
+function canviarGestor(k) { currentManagerKey = k; renderManager(); }
+
+function sincronitzarNomResponsable(val) {
+  const d = document.getElementById("staff-name-display");
+  if (d) d.textContent = (val || "").trim() || "-";
+}
+function validarResponsable() {
+  const c = cfg();
+  if (c.managers || !c.requireStaffName) return true;
+  const el = document.getElementById("staff-name-input");
+  if (!el) return true;
+  const mots = (el.value || "").trim().split(/\s+/).filter(m => m.length > 0);
+  if (mots.length < 2) {
+    alert("⚠️ Cal indicar el NOM i COGNOM complet del responsable de l'hotel a la secció de signatura!");
+    el.focus(); return false;
+  }
+  return true;
+}
+function nomResponsable() {
+  const el = document.getElementById("staff-name-input");
+  if (el) return el.value;
+  const c = cfg();
+  if (c.managers) { const m = c.managers[currentManagerKey]; return m ? m.name : ""; }
+  return "";
+}
+
+/* =====================================================================
+   6) TRADUCCIONS
+   ===================================================================== */
+const translations = {
+  ca: { establiment:"Establiment:", rao_social:"Raó Social:", dom_social:"Dom. Social:", tel_hotel:"Tel. Hotel:", tel_reserves:"Tel. Reserves:", tel_gestor:"Tel. Gestor:", email_hotel:"Email Hotel:", email_grups:"Grups:",
+    num_proforma:"Núm:", data_doc:"Data:", title_client:"Dades del Client / Agència", label_company:"Empresa / Agència:", label_nif:"NIF / CIF / Passaport:", label_contact:"Persona Contacte:", label_email:"Email / Telèfon:",
+    title_group:"Detalls del Grup / Event", label_group_name:"Nom del Grup:", label_pms_ref:"Ref. Reserva / PMS:", label_dates:"Entrada / Sortida:", label_nights:"Nits Calculades:",
+    th_concept:"Concepte / Servei", th_item_dates:"Dates", th_units:"Unitats", th_nights:"Nits/Dies", th_price:"Preu Un. IVA incl. (€)", th_discount:"Desc. (%)", th_vat_type:"Tipus IVA", th_total:"Total IVA incl. (€)",
+    sec_accommodation:"1. ALLOTJAMENT I SUPLEMENTS (IVA 10%)", btn_add_room:"+ Afegir Habitació", sec_rooms:"2. SALES I EQUIPAMENTS (IVA 21%)", btn_add_room_eq:"+ Afegir Sala / Equip", sec_catering:"3. RESTAURACIÓ I CÀTERING (IVA 10%)", btn_add_catering:"+ Afegir Servei Càtering",
+    tax_title:"Taxa Turística (Persones > 17 anys - {city})", tax_pax_label:"Persones > 17 anys:", tax_nights_label:"Nits a liquidar (Màx 7):", tax_rate_label:"Tarifa per Nit/Pax (IVA incl.):", tax_total_label:"Total Taxa Turística (10% IVA incl.):",
+    title_payments:"Calendari de Dipòsits i Pagaments", btn_add_deposit:"+ Dipòsit Intermedi", pct_alert_msg:"⚠️ Els dipòsits intermedis superen el total de la proforma!",
+    base_10_label:"Base Imposable Allotj./Rest. (10%):", vat_10_label:"Quota IVA Allotj./Rest. (10%):", base_21_label:"Base Imposable Sales/Equips (21%):", vat_21_label:"Quota IVA Sales/Equips (21%):", base_tax_label:"Base Imposable Taxa Turística (10%):", vat_tax_label:"Quota IVA Taxa Turística (10%):", total_proforma_label:"TOTAL PROFORMA:",
+    title_cancellation:"Terminis i Condicions de Cancel·lació de Grups", btn_add_cancellation:"+ Afegir Tram Intermedi",
+    bank_title:"💳 Dades Bancàries i Transferència", bank_title_tpv:"💳 Pagament en Línia per Targeta (TPV Virtual)", bank_label_bank:"Entitat Bancària",
+    bank_concept_text:"Cal indicar el número de proforma o nom del grup en el concepte de la transferència.", tpv_concept_text:"Podeu realitzar el pagament directament amb targeta de crèdit/dèbit mitjançant la nostra plataforma segura TPV Virtual.",
+    tpv_url_label:"🔗 Enllaç de Pagament Directe per Targeta (TPV Virtual / PayGold):",
+    notes_tax_disclaimer:"• Si no està inclosa a la proforma, la taxa turística de {city} es liquidarà directament al check-in segons la normativa vigent.",
+    notes_placeholder:"Observacions i comentaris addicionals...",
+    client_signature_title:"Conformitat i Acceptació del Client", client_company_label:"Empresa / Agència:", client_nif_label:"NIF / CIF:", client_rep_label:"Representant:", sign_seal_label:"Signatura i Segell del Client", hotel_seal_label:"Signatura i Segell Hotel", hotel_dept:"Departament de reserves, grups i esdeveniments", btn_print:"Imprimir / Generar PDF",
+    deposit_label:"• Dipòsit:", rest_label:"Resta Pendent:", before_text:"abans del:", paid_text:"Pagat", paid_tag:"(PAGAT)",
+    canc_free_1:"• Sense despeses de cancel·lació fins al", canc_between:"• Entre el", canc_and_the:"i el", canc_arrival:"i la data d'arribada:", canc_expenses:"% despeses",
+    canc_days_before:"dies abans:", canc_days_before_2:"dies abans" },
+
+  es: { establiment:"Establecimiento:", rao_social:"Razón Social:", dom_social:"Dom. Social:", tel_hotel:"Tel. Hotel:", tel_reserves:"Tel. Reservas:", tel_gestor:"Tel. Gestor:", email_hotel:"Email Hotel:", email_grups:"Grupos:",
+    num_proforma:"Nº:", data_doc:"Fecha:", title_client:"Datos del Cliente / Agencia", label_company:"Empresa / Agencia:", label_nif:"NIF / CIF / Pasaporte:", label_contact:"Persona de Contacto:", label_email:"Email / Teléfono:",
+    title_group:"Detalles del Grupo / Evento", label_group_name:"Nombre del Grupo:", label_pms_ref:"Ref. Reserva / PMS:", label_dates:"Entrada / Salida:", label_nights:"Noches Calculadas:",
+    th_concept:"Concepto / Servicio", th_item_dates:"Fechas", th_units:"Unidades", th_nights:"Noches/Días", th_price:"Precio Un. IVA incl. (€)", th_discount:"Dto. (%)", th_vat_type:"Tipo IVA", th_total:"Total IVA incl. (€)",
+    sec_accommodation:"1. ALOJAMIENTO Y SUPLEMENTOS (IVA 10%)", btn_add_room:"+ Añadir Habitación", sec_rooms:"2. SALAS Y EQUIPAMIENTOS (IVA 21%)", btn_add_room_eq:"+ Añadir Sala / Equipo", sec_catering:"3. RESTAURACIÓN Y CATERING (IVA 10%)", btn_add_catering:"+ Añadir Servicio Catering",
+    tax_title:"Tasa Turística (Personas > 17 años - {city})", tax_pax_label:"Personas > 17 años:", tax_nights_label:"Noches a liquidar (Máx 7):", tax_rate_label:"Tarifa por Noche/Pax (IVA incl.):", tax_total_label:"Total Tasa Turística (10% IVA incl.):",
+    title_payments:"Calendario de Depósitos y Pagos", btn_add_deposit:"+ Depósito Intermedio", pct_alert_msg:"⚠️ ¡Los depósitos intermedios superan el total de la proforma!",
+    base_10_label:"Base Imponible Aloj./Rest. (10%):", vat_10_label:"Cuota IVA Aloj./Rest. (10%):", base_21_label:"Base Imponible Salas/Equipos (21%):", vat_21_label:"Cuota IVA Salas/Equipos (21%):", base_tax_label:"Base Imponible Tasa Turística (10%):", vat_tax_label:"Cuota IVA Tasa Turística (10%):", total_proforma_label:"TOTAL PROFORMA:",
+    title_cancellation:"Términos y Condiciones de Cancelación de Grupos", btn_add_cancellation:"+ Añadir Tramo Intermedio",
+    bank_title:"💳 Datos Bancarios y Transferencia", bank_title_tpv:"💳 Pago en Línea por Tarjeta (TPV Virtual)", bank_label_bank:"Entidad Bancaria",
+    bank_concept_text:"Es necesario indicar el número de proforma o nombre del grupo en el concepto de la transferencia.", tpv_concept_text:"Puede realizar el pago directamente con tarjeta de crédito/débito a través de nuestra plataforma segura TPV Virtual.",
+    tpv_url_label:"🔗 Enlace de Pago Directo por Tarjeta (TPV Virtual / PayGold):",
+    notes_tax_disclaimer:"• Si no está incluida en la proforma, la tasa turística de {city} se liquidará directamente en el check-in según la normativa vigente.",
+    notes_placeholder:"Observaciones y comentarios adicionales...",
+    client_signature_title:"Conformidad y Aceptación del Cliente", client_company_label:"Empresa / Agencia:", client_nif_label:"NIF / CIF:", client_rep_label:"Representante:", sign_seal_label:"Firma y Sello del Cliente", hotel_seal_label:"Firma y Sello Hotel", hotel_dept:"Departamento de reservas, grupos y eventos", btn_print:"Imprimir / Generar PDF",
+    deposit_label:"• Depósito:", rest_label:"Resto Pendiente:", before_text:"antes del:", paid_text:"Pagado", paid_tag:"(PAGADO)",
+    canc_free_1:"• Sin gastos de cancelación hasta el", canc_between:"• Entre el", canc_and_the:"y el", canc_arrival:"y la fecha de llegada:", canc_expenses:"% gastos",
+    canc_days_before:"días antes:", canc_days_before_2:"días antes" },
+
+  en: { establiment:"Establishment:", rao_social:"Company Name:", dom_social:"Reg. Address:", tel_hotel:"Hotel Tel:", tel_reserves:"Reservations Tel:", tel_gestor:"Manager Tel:", email_hotel:"Hotel Email:", email_grups:"Groups:",
+    num_proforma:"No:", data_doc:"Date:", title_client:"Client / Agency Details", label_company:"Company / Agency:", label_nif:"VAT / ID / Passport:", label_contact:"Contact Person:", label_email:"Email / Phone:",
+    title_group:"Group / Event Details", label_group_name:"Group Name:", label_pms_ref:"Booking Ref / PMS:", label_dates:"Check-in / Check-out:", label_nights:"Calculated Nights:",
+    th_concept:"Concept / Service", th_item_dates:"Dates", th_units:"Units", th_nights:"Nights/Days", th_price:"Unit Price VAT incl. (€)", th_discount:"Disc. (%)", th_vat_type:"VAT Rate", th_total:"Total VAT incl. (€)",
+    sec_accommodation:"1. ACCOMMODATION & SUPPLEMENTS (10% VAT)", btn_add_room:"+ Add Room", sec_rooms:"2. MEETING ROOMS & EQUIPMENT (21% VAT)", btn_add_room_eq:"+ Add Room / Eq.", sec_catering:"3. CATERING & RESTAURANT (10% VAT)", btn_add_catering:"+ Add Catering Service",
+    tax_title:"City Tax (Guests > 17 years old - {city})", tax_pax_label:"Guests > 17 years:", tax_nights_label:"Nights to charge (Max 7):", tax_rate_label:"Rate per Night/Pax (VAT incl.):", tax_total_label:"Total City Tax (10% VAT incl.):",
+    title_payments:"Deposit & Payment Schedule", btn_add_deposit:"+ Add Intermediate Deposit", pct_alert_msg:"⚠️ Intermediate deposits exceed the proforma total!",
+    base_10_label:"Tax Base Acc./Catering (10%):", vat_10_label:"VAT Amount Acc./Catering (10%):", base_21_label:"Tax Base Rooms/Eq. (21%):", vat_21_label:"VAT Amount Rooms/Eq. (21%):", base_tax_label:"Tax Base City Tax (10%):", vat_tax_label:"VAT Amount City Tax (10%):", total_proforma_label:"TOTAL PROFORMA:",
+    title_cancellation:"Group Cancellation Policy & Terms", btn_add_cancellation:"+ Add Term",
+    bank_title:"💳 Bank Details & Wire Transfer", bank_title_tpv:"💳 Online Credit Card Payment (Virtual POS)", bank_label_bank:"Bank Entity",
+    bank_concept_text:"Please indicate the proforma number or group name in the transfer reference.", tpv_concept_text:"You can make the payment directly by credit/debit card via our secure POS platform.",
+    tpv_url_label:"🔗 Direct Payment Link (Virtual POS / PayGold):",
+    notes_tax_disclaimer:"• If not included in the proforma invoice, {city} city tax will be settled directly upon check-in according to regulations.",
+    notes_placeholder:"Additional comments and remarks...",
+    client_signature_title:"Client Approval & Acceptance", client_company_label:"Company / Agency:", client_nif_label:"VAT / ID:", client_rep_label:"Representative:", sign_seal_label:"Client Signature & Stamp", hotel_seal_label:"Hotel Signature & Stamp", hotel_dept:"Reservations, groups and events department", btn_print:"Print / Save as PDF",
+    deposit_label:"• Deposit:", rest_label:"Remaining Balance:", before_text:"before:", paid_text:"Paid", paid_tag:"(PAID)",
+    canc_free_1:"• Free cancellation until", canc_between:"• Between", canc_and_the:"and", canc_arrival:"and check-in date:", canc_expenses:"% fee",
+    canc_days_before:"days before:", canc_days_before_2:"days before" },
+
+  fr: { establiment:"Établissement:", rao_social:"Raison Sociale:", dom_social:"Siège Social:", tel_hotel:"Tél. Hôtel:", tel_reserves:"Tél. Réservations:", tel_gestor:"Tél. Gestionnaire:", email_hotel:"Email Hôtel:", email_grups:"Groupes:",
+    num_proforma:"N°:", data_doc:"Date:", title_client:"Coordonnées du Client / Agence", label_company:"Société / Agence:", label_nif:"TVA / NIF / Passeport:", label_contact:"Personne de Contact:", label_email:"Email / Téléphone:",
+    title_group:"Détails du Groupe / Événement", label_group_name:"Nom du Groupe:", label_pms_ref:"Réf. Réservation / PMS:", label_dates:"Arrivée / Départ:", label_nights:"Nuitées Calculées:",
+    th_concept:"Concept / Service", th_item_dates:"Dates", th_units:"Unités", th_nights:"Nuits/Jours", th_price:"Prix Un. TVA incl. (€)", th_discount:"Rem. (%)", th_vat_type:"Taux TVA", th_total:"Total TVA incl. (€)",
+    sec_accommodation:"1. HÉBERGEMENT ET SUPPLÉMENTS (TVA 10%)", btn_add_room:"+ Ajouter Chambre", sec_rooms:"2. SALLES ET ÉQUIPEMENTS (TVA 21%)", btn_add_room_eq:"+ Ajouter Salle / Éq.", sec_catering:"3. RESTAURACIÓ I CÀTERING (IVA 10%)", btn_add_catering:"+ Ajouter Service Traiteur",
+    tax_title:"Taxe de Séjour (Personnes > 17 ans - {city})", tax_pax_label:"Personnes > 17 ans:", tax_nights_label:"Nuitées à régler (Max 7):", tax_rate_label:"Tarif par Nuit/Pax (TVA incl.):", tax_total_label:"Total Taxe de Séjour (10% TVA incl.):",
+    title_payments:"Échéancier de Dépôts et Paiements", btn_add_deposit:"+ Dépôt Intermédiaire", pct_alert_msg:"⚠️ Les dépôts intermédiaires dépassent le total de la proforma!",
+    base_10_label:"Base Imposable Héb./Rest. (10%):", vat_10_label:"Montant TVA Héb./Rest. (10%):", base_21_label:"Base Imposable Salles/Éq. (21%):", vat_21_label:"Montant TVA Salles/Éq. (21%):", base_tax_label:"Base Imposable Taxe de Séjour (10%):", vat_tax_label:"Montant TVA Taxe de Séjour (10%):", total_proforma_label:"TOTAL PROFORMA:",
+    title_cancellation:"Conditions d'Annulation pour Groupes", btn_add_cancellation:"+ Ajouter Tranche Intermédiaire",
+    bank_title:"💳 Coordonnées Bancaires et Virement", bank_title_tpv:"💳 Paiement en Ligne par Carte (TPE Virtuel)", bank_label_bank:"Établissement Bancaire",
+    bank_concept_text:"Veuillez indiquer le numéro de proforma ou nom du groupe dans le libellé du virement.", tpv_concept_text:"Vous pouvez effectuer le paiement directement par carte bancaire via notre plateforme sécurisée TPE Virtuel.",
+    tpv_url_label:"🔗 Lien de Paiement Direct par Carte (TPE Virtuel / PayGold):",
+    notes_tax_disclaimer:"• Si elle n'est pas incluse dans la facture proforma, la taxe de séjour de {city} sera réglée directement lors du check-in conformément à la réglementation.",
+    notes_placeholder:"Remarques et observations supplémentaires...",
+    client_signature_title:"Accord et Acceptation du Client", client_company_label:"Société / Agence:", client_nif_label:"TVA / NIF:", client_rep_label:"Représentant:", sign_seal_label:"Signature et Cachet du Client", hotel_seal_label:"Signature et Cachet Hôtel", hotel_dept:"Département réservations, groupes et événements", btn_print:"Imprimer / Générer PDF",
+    deposit_label:"• Dipòsit:", rest_label:"Reste à Payer:", before_text:"avant le:", paid_text:"Payé", paid_tag:"(PAYÉ)",
+    canc_free_1:"• Annulation gratuite jusqu'au", canc_between:"• Entre le", canc_and_the:"et le", canc_arrival:"et la date d'arrivée:", canc_expenses:"% frais",
+    canc_days_before:"jours avant :", canc_days_before_2:"jours avant" }
+};
+
+const ETIQUETES_CANC = { free1:"canc_free_1", between:"canc_between", andThe:"canc_and_the", daysBefore:"canc_days_before", daysBefore2:"canc_days_before_2", arrival:"canc_arrival", expenses:"canc_expenses" };
+
+function refrescarEtiquetesCancelacio() {
+  const t = translations[currentLang];
+  document.querySelectorAll(".canc-row [data-canc-label]").forEach(sp => {
+    const k = ETIQUETES_CANC[sp.getAttribute("data-canc-label")];
+    if (k && t[k]) sp.textContent = t[k];
+  });
+}
+
+function canviarIdioma(lang) {
+  currentLang = lang;
+  const t = translations[lang];
+  const city = cfg().tax.city;
+
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const k = el.getAttribute("data-i18n");
+    if (t[k]) el.textContent = t[k].replace(/\{city\}/g, city);
+  });
+
+  const nt = document.getElementById("notes-textarea");
+  if (nt) nt.placeholder = t.notes_placeholder;
+  const ss = document.getElementById("sig-space");
+  if (ss) ss.setAttribute("data-sign-label", t.sign_seal_label);
+
+  const pType = document.getElementById("payment-type-toggle") ? document.getElementById("payment-type-toggle").value : "BANK";
+  canviarTipusModalitatPagament(pType);
+
+  refrescarSelectsConceptes();
+  refrescarEtiquetesCancelacio();
+
+  document.querySelectorAll(".payment-row").forEach(row => {
+    const isFinal = row.classList.contains("final-row");
+    const ld = row.querySelector(".label-dep");
+    if (ld) ld.textContent = isFinal ? t.rest_label : t.deposit_label;
+    const bt = row.querySelector(".before-text");
+    if (bt) bt.textContent = t.before_text;
+    const cw = row.querySelector(".chk-paid-wrap");
+    if (cw) { const chk = cw.querySelector("input"); cw.innerHTML = ""; if (chk) cw.appendChild(chk); cw.appendChild(document.createTextNode(" " + t.paid_text)); }
+    const pt = row.querySelector(".paid-tag");
+    if (pt) pt.textContent = t.paid_tag;
+  });
+
+  recalcular();
+}
+
+function refrescarSelectsConceptes() {
+  ["body-allotjament", "body-sales", "body-restauracio"].forEach(bodyId => {
+    const cat = categoriaDeTbody(bodyId);
+    document.querySelectorAll("#" + bodyId + " tr").forEach(row => {
+      const sel = row.querySelector(".concept-select");
+      if (!sel) return;
+      const idx = sel.selectedIndex >= 0 ? sel.selectedIndex : 0;
+      sel.innerHTML = opcions(cat).map(o => `<option value="${esc(o.val)}">${esc(o.text)}</option>`).join("");
+      if (idx < sel.options.length) sel.selectedIndex = idx;
+    });
+  });
+}
+
+/* =====================================================================
+   7) CAPÇALERA, NITS, CLIENTS
+   ===================================================================== */
+function calcNoptes() {
+  const inEl = document.getElementById("in-date"), outEl = document.getElementById("out-date");
+  const nitsEl = document.getElementById("nits-num");
+  const d1v = inEl.value, d2v = outEl.value;
+  let nits = 0;
+  outEl.style.borderColor = ""; outEl.title = "";
+  if (d1v && d2v) {
+    const d1 = new Date(d1v), d2 = new Date(d2v);
+    if (d2 > d1) { nits = Math.round((d2 - d1) / 86400000); }
+    else { outEl.style.borderColor = "#dc3545"; outEl.title = "La data de sortida ha de ser posterior a la d'entrada"; }
+  }
+  nitsEl.value = nits;
+  const tn = document.getElementById("tax-nits");
+  if (tn && nits > 0) tn.value = Math.min(nits, 7);
+  recalcular();
+}
+
+function sincronitzarCapcaleraAmbAllotjament() {
+  calcNoptes();
+  const d1 = document.getElementById("in-date").value;
+  const d2 = document.getElementById("out-date").value;
+  const nits = document.getElementById("nits-num").value;
+  const f = document.querySelector("#body-allotjament tr:first-child");
+  if (f) {
+    if (d1) f.querySelector(".item-date-start").value = d1;
+    if (d2) f.querySelector(".item-date-end").value = d2;
+    if (nits && parseInt(nits) > 0) f.querySelector(".nits").value = nits;
+    actualitzarFormatDataFila(f);
+  }
+}
+
+function sincronitzarDadesClient() {
+  document.getElementById("client-company-disp").textContent = document.getElementById("client-company-input").value || "-";
+  document.getElementById("client-nif-disp").textContent = document.getElementById("client-nif-input").value || "-";
+  document.getElementById("client-name-disp").textContent = document.getElementById("client-name-input").value || "-";
+}
+
+function sincronitzarNotes(val) {
+  const pb = document.getElementById("notes-print-box");
+  if (pb) pb.textContent = val;
+  const ta = document.getElementById("notes-textarea");
+  if (ta) { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; }
+}
+
+function actualitzarFormatDataFila(tr) {
+  const d1i = tr.querySelector(".item-date-start"), d2i = tr.querySelector(".item-date-end");
+  const d1 = d1i ? d1i.value : "", d2 = d2i ? d2i.value : "";
+  const cell = tr.querySelector(".date-range-cell");
+  if (d1 && d2) {
+    const a = new Date(d1), b = new Date(d2);
+    if (b > a) { const n = tr.querySelector(".nits"); if (n) n.value = Math.round((b - a) / 86400000); }
+  }
+  let text = "";
+  if (d1 && d2) text = formatDate(new Date(d1)) + " - " + formatDate(new Date(d2));
+  else if (d1) text = formatDate(new Date(d1));
+  else if (d2) text = formatDate(new Date(d2));
+  cell.setAttribute("data-date-formatted", text);
+  recalcular();
+}
+
+/* =====================================================================
+   8) FILES DE SERVEI
+   ===================================================================== */
+function afegirFila(targetBodyId, categoria, initialQty = 0, initialNits = 0, initialPrice = 0, d1 = "", d2 = "") {
+  const validId = targetBodyId && document.getElementById(targetBodyId) ? targetBodyId : "body-allotjament";
+  const tbody = document.getElementById(validId);
+  if (!tbody) return;
+  const tr = document.createElement("tr");
+  const selectHtml = `<select class="concept-select" onchange="canviSelect(this)">` +
+    opcions(categoria).map(o => `<option value="${esc(o.val)}">${esc(o.text)}</option>`).join("") + `</select>`;
+  const defaultIva = categoria === "SALES" ? "21" : "10";
+
+  tr.innerHTML = `
+    <td style="width:26%;" class="concept-cell">${selectHtml}</td>
+    <td style="width:20%;" class="date-range-cell" data-date-formatted="">
+      <input type="date" class="item-date-start" value="${d1}" max="2050-12-31" onchange="actualitzarFormatDataFila(this.closest('tr'))">
+      <span>-</span>
+      <input type="date" class="item-date-end" value="${d2}" max="2050-12-31" onchange="actualitzarFormatDataFila(this.closest('tr'))">
+    </td>
+    <td style="width:6%;"><input type="number" value="${initialQty}" class="qty" min="0" style="text-align:center;" oninput="recalcular()"></td>
+    <td style="width:6%;"><input type="number" value="${initialNits}" class="nits" min="0" style="text-align:center;" oninput="recalcular()"></td>
+    <td style="width:12%;"><input type="number" value="${initialPrice ? initialPrice.toFixed(2) : ""}" class="preu" step="any" placeholder="0.00" style="text-align:right;" oninput="recalcular()" onchange="formatarDecimals(this)"></td>
+    <td style="width:6%;" class="desc-cell" data-desc-zero="true"><input type="number" value="0" class="desc" min="0" max="100" style="text-align:center;" oninput="recalcular()"></td>
+    <td style="width:13%;"><select class="iva" onchange="recalcular()">
+      <option value="10" ${defaultIva === "10" ? "selected" : ""}>10% IVA</option>
+      <option value="21" ${defaultIva === "21" ? "selected" : ""}>21% IVA</option>
+      <option value="0">0% IVA</option></select></td>
+    <td class="subtotal" style="width:11%; text-align:right; font-weight:600;">0.00 €</td>
+    <td class="toolbar" style="width:2%;"><button class="btn-remove" onclick="treureFila(this)">X</button></td>`;
+  tbody.appendChild(tr);
+  actualitzarFormatDataFila(tr);
+}
+
+function canviSelect(sel) {
+  if (sel.value === "CUSTOM") {
+    const cell = sel.closest(".concept-cell");
+    cell.innerHTML = `<div style="display:flex;gap:4px;align-items:center;">
+      <input type="text" class="custom-input" placeholder="..." style="flex:1;" oninput="recalcular()">
+      <button class="btn-revert" title="Tornar a la llista" onclick="revertirCustom(this)">↺</button></div>`;
+    cell.querySelector(".custom-input").focus();
+  }
+  recalcular();
+}
+
+function revertirCustom(btn) {
+  const cell = btn.closest(".concept-cell");
+  const tr = btn.closest("tr");
+  const cat = categoriaDeTbody(tr.closest("tbody").id);
+  const valor = cell.querySelector(".custom-input").value;
+  cell.innerHTML = `<select class="concept-select" onchange="canviSelect(this)">` +
+    opcions(cat).map(o => `<option value="${esc(o.val)}">${esc(o.text)}</option>`).join("") + `</select>`;
+  const sel = cell.querySelector(".concept-select");
+  if ([...sel.options].some(o => o.value === valor)) sel.value = valor;
+  recalcular();
+}
+
+function treureFila(btn) { btn.closest("tr").remove(); recalcular(); }
+function formatarDecimals(input) { const v = parseFloat(String(input.value).replace(",", ".")); if (!isNaN(v) && v >= 0) input.value = v.toFixed(2); recalcular(); }
+
+/* =====================================================================
+   9) DIPÒSITS
+   ===================================================================== */
+function afegirTramPagament(pct = 25, dataLimit = "", isFinal = false, mode = "FIXED", daysVal = 14) {
+  const container = document.getElementById("payment-rows-container");
+  const div = document.createElement("div");
+  div.className = "payment-row" + (isFinal ? " final-row" : "");
+  const t = translations[currentLang];
+  const isFirst = container.querySelectorAll(".payment-row:not(.final-row)").length === 0;
+
+  let modeOptions = `<option value="FIXED" ${mode === "FIXED" ? "selected" : ""}>Data Fixa</option>
+                     <option value="BEFORE_ARR" ${mode === "BEFORE_ARR" ? "selected" : ""}>dies abans d'arribada</option>`;
+  if (isFirst && !isFinal) modeOptions += `<option value="AFTER_CONF" ${mode === "AFTER_CONF" ? "selected" : ""}>dies desprès confirmació</option>`;
+
+  if (isFinal) {
+    div.innerHTML = `
+      <div class="payment-left-group">
+        <span class="label-dep" style="min-width:90px; font-weight:bold;">${t.rest_label}</span>
+        <span class="before-text">${t.before_text}</span>
+        <select class="pay-mode-select" onchange="canviModePagament(this)">${modeOptions}</select>
+        <input type="number" class="pay-days-input" value="${daysVal}" min="0" style="${mode === "FIXED" ? "display:none;" : ""}" oninput="recalcular()">
+        <input type="date" class="pay-date" value="${dataLimit}" max="2050-12-31" style="${mode !== "FIXED" ? "display:none;" : ""}" onchange="recalcular()">
+        <span class="print-pay-text"></span>
+        <span class="chk-paid-wrap" style="margin-left:4px;"><input type="checkbox" onchange="marcarPagat(this)"> ${t.paid_text}</span>
+        <span class="paid-tag">${t.paid_tag}</span>
+      </div>
+      <span class="val-amount final-amount" style="font-weight:bold; min-width:80px; text-align:right;">0.00 €</span>`;
+    container.appendChild(div);
+  } else {
+    div.innerHTML = `
+      <div class="payment-left-group">
+        <span class="label-dep">${t.deposit_label}</span>
+        <input type="number" class="pay-pct" value="${pct}" min="0" max="100" step="any" oninput="canviPctManual(this)"><span class="pct-symbol">%</span>
+        <span class="before-text">${t.before_text}</span>
+        <select class="pay-mode-select" onchange="canviModePagament(this)">${modeOptions}</select>
+        <input type="number" class="pay-days-input" value="${daysVal}" min="0" style="${mode === "FIXED" ? "display:none;" : ""}" oninput="recalcular()">
+        <input type="date" class="pay-date" value="${dataLimit}" max="2050-12-31" style="${mode !== "FIXED" ? "display:none;" : ""}" onchange="recalcular()">
+        <span class="print-pay-text"></span>
+        <span class="chk-paid-wrap" style="margin-left:4px;"><input type="checkbox" onchange="marcarPagat(this)"> ${t.paid_text}</span>
+        <span class="paid-tag">${t.paid_tag}</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <input type="number" class="pay-amount-input" placeholder="0.00" step="any" style="width:75px; text-align:right; font-weight:bold;" oninput="canviImportManual(this)" onchange="formatarDecimals(this)"> <span class="no-print">€</span>
+        <button class="btn-remove" onclick="treureTramPagament(this)">X</button>
+      </div>`;
+    const fr = container.querySelector(".final-row");
+    if (fr) container.insertBefore(div, fr); else container.appendChild(div);
+  }
+  recalcular();
+}
+function canviPctManual(i) { i.closest(".payment-row").setAttribute("data-last-edited", "pct"); recalcular(); }
+function canviImportManual(i) { i.closest(".payment-row").setAttribute("data-last-edited", "amount"); recalcular(); }
+function canviModePagament(s) {
+  const row = s.closest(".payment-row");
+  const days = row.querySelector(".pay-days-input"), date = row.querySelector(".pay-date");
+  if (s.value === "FIXED") { days.style.display = "none"; date.style.display = "inline-block"; }
+  else { days.style.display = "inline-block"; date.style.display = "none"; }
+  recalcular();
+}
+function treureTramPagament(b) { b.closest(".payment-row").remove(); recalcular(); }
+function marcarPagat(chk) { chk.closest(".payment-row").classList.toggle("is-paid", chk.checked); }
+
+/* =====================================================================
+   10) CANCEL·LACIONS
+   ===================================================================== */
+function afegirTramCancelacio(type = "RANGE", d1 = 30, d2 = 15, pct = 50) {
+  const container = document.getElementById("canc-rows-container");
+  const div = document.createElement("div");
+  div.className = "canc-row";
+  div.setAttribute("data-type", type);
+  if (type === "FREE") {
+    div.innerHTML = `<span class="edit-days" data-canc-label="free1"></span>
+      <span class="edit-days"><input type="number" class="canc-d1" value="${d1}" min="1" oninput="recalcular()"> <span data-canc-label="daysBefore"></span></span>
+      <span class="print-text"></span>
+      <button class="btn-remove" onclick="treureTramCancelacio(this)">X</button>`;
+  } else if (type === "ARRIVAL") {
+    div.innerHTML = `<span class="edit-days" data-canc-label="between"></span>
+      <span class="edit-days"><input type="number" class="canc-d1" value="${d1}" min="1" oninput="recalcular()"> <span data-canc-label="daysBefore2"></span></span>
+      <span class="print-text"></span>
+      <span class="edit-days"><span data-canc-label="arrival"></span> <input type="number" class="canc-pct" value="${pct}" min="0" max="100" oninput="recalcular()">% <span data-canc-label="expenses"></span></span>
+      <button class="btn-remove" onclick="treureTramCancelacio(this)">X</button>`;
+  } else {
+    div.innerHTML = `<span class="edit-days" data-canc-label="between"></span>
+      <span class="edit-days"><input type="number" class="canc-d1" value="${d1}" min="1" oninput="recalcular()"> <span data-canc-label="andThe"></span></span>
+      <span class="edit-days"><input type="number" class="canc-d2" value="${d2}" min="0" oninput="recalcular()"> <span data-canc-label="daysBefore"></span></span>
+      <span class="print-text"></span>
+      <span class="edit-days"><input type="number" class="canc-pct" value="${pct}" min="0" max="100" oninput="recalcular()">% <span data-canc-label="expenses"></span></span>
+      <button class="btn-remove" onclick="treureTramCancelacio(this)">X</button>`;
+  }
+  container.appendChild(div);
+  refrescarEtiquetesCancelacio();
+  recalcular();
+}
+function treureTramCancelacio(b) { b.closest(".canc-row").remove(); recalcular(); }
+
+/* =====================================================================
+   11) CÀLCUL
+   ===================================================================== */
+function recalcular() {
+  let b10 = 0, b21 = 0, i10 = 0, i21 = 0, totalFinal = 0;
+
+  document.querySelectorAll("tbody tr").forEach(row => {
+    const qtyI = row.querySelector(".qty"), nitsI = row.querySelector(".nits"), preuI = row.querySelector(".preu");
+    const descI = row.querySelector(".desc"), ivaS = row.querySelector(".iva"), descCell = row.querySelector(".desc-cell");
+    if (!qtyI || !preuI) return;
+
+    const qty = parseFloat(qtyI.value) || 0;
+    const nitsRaw = nitsI ? nitsI.value : "";
+    const nits = nitsRaw === "" ? 1 : (parseFloat(nitsRaw) || 0);
+    const preu = parseFloat(String(preuI.value).replace(",", ".")) || 0;
+    const desc = parseFloat(descI ? descI.value : 0) || 0;
+    const iva = parseInt(ivaS ? ivaS.value : 10);
+    if (descCell) descCell.setAttribute("data-desc-zero", desc === 0 ? "true" : "false");
+
+    const net = qty * nits * preu * (1 - desc / 100);
+    const sc = row.querySelector(".subtotal");
+    if (sc) sc.textContent = net.toFixed(2) + " €";
+    totalFinal += net;
+
+    if (iva === 10) { const b = net / 1.10; b10 += b; i10 += net - b; }
+    else if (iva === 21) { const b = net / 1.21; b21 += b; i21 += net - b; }
+  });
+
+  const isTax = document.getElementById("tax-enable").checked;
+  document.getElementById("tax-card-block").classList.toggle("has-tax-active", isTax);
+  document.getElementById("tax-disclaimer-text").style.display = isTax ? "none" : "block";
+
+  const checkInVal = document.getElementById("in-date").value;
+  const checkInDate = checkInVal ? new Date(checkInVal) : null;
+  const docDateVal = document.getElementById("data-doc").value;
+  const docDate = docDateVal ? new Date(docDateVal) : new Date();
+
+  let rate = cfg().tax.rates[0].rate;
+  cfg().tax.rates.forEach(r => { if (!r.from || (checkInDate && checkInDate >= new Date(r.from))) rate = r.rate; });
+
+  const pax = parseInt(document.getElementById("tax-pax").value) || 0;
+  let tn = parseInt(document.getElementById("tax-nits").value) || 0;
+  tn = Math.min(tn, 7);
+  document.getElementById("tax-nits").value = tn;
+
+  const totalTaxa = isTax ? pax * tn * rate : 0;
+  const baseTaxa = totalTaxa / 1.10, ivaTaxa = totalTaxa - baseTaxa;
+  document.getElementById("tax-rate-display").value = rate.toFixed(2) + " € / nit";
+  document.getElementById("tax-total-display").value = totalTaxa.toFixed(2) + " €";
+
+  const rb = document.getElementById("row-taxa-base"), ri = document.getElementById("row-taxa-iva");
+  if (isTax) {
+    rb.style.display = "table-row"; ri.style.display = "table-row";
+    document.getElementById("val-taxa-base").textContent = baseTaxa.toFixed(2) + " €";
+    document.getElementById("val-taxa-iva").textContent = ivaTaxa.toFixed(2) + " €";
+    totalFinal += totalTaxa;
+  } else { rb.style.display = "none"; ri.style.display = "none"; }
+
+  document.getElementById("base-10").textContent = b10.toFixed(2) + " €";
+  document.getElementById("iva-10").textContent = i10.toFixed(2) + " €";
+  document.getElementById("base-21").textContent = b21.toFixed(2) + " €";
+  document.getElementById("iva-21").textContent = i21.toFixed(2) + " €";
+  document.getElementById("total-final").innerHTML = "<strong>" + totalFinal.toFixed(2) + " €</strong>";
+
+  let sumDip = 0, lastDate = null;
+  document.querySelectorAll(".payment-row:not(.final-row)").forEach(row => {
+    const pctI = row.querySelector(".pay-pct"), amtI = row.querySelector(".pay-amount-input");
+    const lastEdited = row.getAttribute("data-last-edited") || "pct";
+    let pctVal = parseFloat(pctI ? pctI.value : 0) || 0;
+    let amtVal = parseFloat(String(amtI ? amtI.value : 0).replace(",", ".")) || 0;
+    if (lastEdited === "amount") {
+      if (totalFinal > 0) { pctVal = (amtVal / totalFinal) * 100; if (pctI) pctI.value = pctVal.toFixed(2); }
+    } else {
+      amtVal = totalFinal * (pctVal / 100);
+      if (amtI && document.activeElement !== amtI) amtI.value = amtVal.toFixed(2);
+    }
+    sumDip += amtVal;
+    lastDate = pintarDataPagament(row, docDate, checkInDate, lastDate);
+  });
+
+  const fr = document.querySelector(".payment-row.final-row");
+  if (fr) {
+    const resta = Math.max(0, totalFinal - sumDip);
+    const fa = fr.querySelector(".final-amount");
+    if (fa) fa.textContent = resta.toFixed(2) + " €";
+    pintarDataPagament(fr, docDate, checkInDate, null);
+  }
+
+  const alerta = document.getElementById("pct-alert"), btnP = document.getElementById("btn-print");
+  if (sumDip > totalFinal + 0.01) { alerta.style.display = "block"; btnP.disabled = true; }
+  else { alerta.style.display = "none"; btnP.disabled = false; }
+
+  const t = translations[currentLang];
+  document.querySelectorAll(".canc-row").forEach(row => {
+    const type = row.getAttribute("data-type");
+    const d1 = parseInt((row.querySelector(".canc-d1") || {}).value) || 0;
+    const d2i = row.querySelector(".canc-d2");
+    const d2 = d2i ? (parseInt(d2i.value) || 0) : 0;
+    const pct = parseFloat((row.querySelector(".canc-pct") || {}).value) || 0;
+    let s1 = "dd/mm/aaaa", s2 = "dd/mm/aaaa";
+    if (checkInDate) {
+      const a = new Date(checkInDate); a.setDate(a.getDate() - d1); s1 = formatDate(a);
+      if (d2i) { const b = new Date(checkInDate); b.setDate(b.getDate() - d2); s2 = formatDate(b); }
+    }
+    const ps = row.querySelector(".print-text");
+    if (!ps) return;
+    if (type === "FREE") ps.innerHTML = `${t.canc_free_1} <strong>${s1}</strong>`;
+    else if (type === "ARRIVAL") ps.innerHTML = `${t.canc_between} <strong>${s1}</strong> ${t.canc_arrival} <strong>${pct}%</strong> ${t.canc_expenses}`;
+    else ps.innerHTML = `${t.canc_between} <strong>${s1}</strong> ${t.canc_and_the} <strong>${s2}</strong>: <strong>${pct}%</strong> ${t.canc_expenses}`;
+  });
+
+  programarEsborrany();
+}
+
+function pintarDataPagament(row, docDate, checkInDate, lastDate) {
+  const modeS = row.querySelector(".pay-mode-select");
+  const mode = modeS ? modeS.value : "FIXED";
+  const daysI = row.querySelector(".pay-days-input");
+  const days = daysI ? (parseInt(daysI.value) || 0) : 0;
+  const dateI = row.querySelector(".pay-date");
+  const span = row.querySelector(".print-pay-text");
+  let d = null;
+  if (mode === "AFTER_CONF") { d = new Date(docDate); d.setDate(d.getDate() + days); }
+  else if (mode === "BEFORE_ARR") { if (checkInDate) { d = new Date(checkInDate); d.setDate(d.getDate() - days); } }
+  else { const v = dateI ? dateI.value : ""; d = v ? new Date(v) : null; }
+  if (lastDate && d && d < lastDate) d = new Date(lastDate);
+  if (span) span.textContent = d ? formatDate(d) : "dd/mm/aaaa";
+  return d ? new Date(d) : lastDate;
+}
+
+/* =====================================================================
+   12) GOOGLE SHEETS
+   ===================================================================== */
+async function actualitzarDesplegableProformes() {
+  const sel = document.getElementById("proformas-list");
+  sel.innerHTML = '<option value="">Cercant a Google Sheets...</option>';
+  try {
+    const res = await fetch(GOOGLE_SCRIPT_URL + "?hotel=" + encodeURIComponent(HOTEL_CODE));
+    globalProformasDB = await res.json();
+    sel.innerHTML = '<option value="">-- Selecciona per carregar --</option>';
+    Object.keys(globalProformasDB).sort().reverse().forEach(id => {
+      const p = globalProformasDB[id];
+      const o = document.createElement("option");
+      o.value = id;
+      o.textContent = `${p.num} - ${p.clientCompany || "Sense nom"} (${p.groupName || "Grup"})`;
+      sel.appendChild(o);
+    });
+  } catch (e) {
+    console.error(e);
+    sel.innerHTML = '<option value="">Error en carregar Google Sheets</option>';
+  }
+}
+
+function generarSeguentNumProforma() {
+  const any = new Date().getFullYear();
+  let max = 0;
+  Object.keys(globalProformasDB).forEach(id => {
+    const m = (globalProformasDB[id].num || "").match(/PRO-(\d{4})-(\d+)/);
+    if (m && parseInt(m[1]) === any) max = Math.max(max, parseInt(m[2]));
+  });
+  return `PRO-${any}-${String(max + 1).padStart(3, "0")}`;
+}
+
+function serialitzarFormulari() {
+  const g = id => { const e = document.getElementById(id); return e ? e.value : ""; };
+  return {
+    hotelCode: HOTEL_CODE, num: g("proforma-num-input").trim(), docDate: g("data-doc"), lang: currentLang,
+    managerKey: cfg().managers ? currentManagerKey : null,
+    clientCompany: g("client-company-input"), clientNif: g("client-nif-input"), clientName: g("client-name-input"), clientEmail: g("client-email-input"),
+    groupName: g("group-name-input"), pmsRef: g("pms-ref-input"), inDate: g("in-date"), outDate: g("out-date"),
+    notes: g("notes-textarea"), taxEnable: document.getElementById("tax-enable").checked,
+    taxPax: g("tax-pax"), taxNits: g("tax-nits"),
+    paymentType: g("payment-type-toggle"), tpvUrl: g("tpv-url-input"), staffName: nomResponsable(),
+    items: Array.from(document.querySelectorAll("tbody tr")).map(row => {
+      const sel = row.querySelector(".concept-select"), cus = row.querySelector(".custom-input");
+      return {
+        bodyId: row.closest("tbody") ? row.closest("tbody").id : "",
+        concept: cus ? cus.value : (sel ? sel.value : ""),
+        isCustom: !!cus,
+        startDate: (row.querySelector(".item-date-start") || {}).value || "",
+        endDate: (row.querySelector(".item-date-end") || {}).value || "",
+        qty: parseFloat((row.querySelector(".qty") || {}).value) || 0,
+        nits: parseFloat((row.querySelector(".nits") || {}).value) || 0,
+        preu: parseFloat(String((row.querySelector(".preu") || {}).value || "").replace(",", ".")) || 0,
+        desc: parseFloat((row.querySelector(".desc") || {}).value) || 0,
+        iva: parseInt((row.querySelector(".iva") || {}).value) || 10
+      };
+    }).filter(it => it.qty > 0 || it.preu > 0 || (it.concept && it.concept.trim() !== "")),
+    payments: Array.from(document.querySelectorAll(".payment-row")).map(row => ({
+      isFinal: row.classList.contains("final-row"),
+      pct: (row.querySelector(".pay-pct") || {}).value || 0,
+      amount: (row.querySelector(".pay-amount-input") || {}).value || 0,
+      lastEdited: row.getAttribute("data-last-edited") || "pct",
+      mode: (row.querySelector(".pay-mode-select") || {}).value || "FIXED",
+      days: (row.querySelector(".pay-days-input") || {}).value || 0,
+      date: (row.querySelector(".pay-date") || {}).value || "",
+      isPaid: row.classList.contains("is-paid")
+    })),
+    cancellations: Array.from(document.querySelectorAll(".canc-row")).map(row => ({
+      type: row.getAttribute("data-type"),
+      d1: (row.querySelector(".canc-d1") || {}).value || 0,
+      d2: (row.querySelector(".canc-d2") || {}).value || 0,
+      pct: (row.querySelector(".canc-pct") || {}).value || 0
+    }))
+  };
+}
+
+function hidratarFormulari(p) {
+  ["body-allotjament", "body-sales", "body-restauracio"].forEach(id => { const e = document.getElementById(id); if (e) e.innerHTML = ""; });
+  document.getElementById("payment-rows-container").innerHTML = "";
+  document.getElementById("canc-rows-container").innerHTML = "";
+
+  document.getElementById("proforma-num-input").value = p.num || "";
+  document.getElementById("data-doc").value = p.docDate || "";
+  document.getElementById("client-company-input").value = p.clientCompany || "";
+  document.getElementById("client-nif-input").value = p.clientNif || "";
+  document.getElementById("client-name-input").value = p.clientName || "";
+  document.getElementById("client-email-input").value = p.clientEmail || "";
+  document.getElementById("group-name-input").value = p.groupName || "";
+  document.getElementById("pms-ref-input").value = p.pmsRef || "";
+  document.getElementById("in-date").value = p.inDate || "";
+  document.getElementById("out-date").value = p.outDate || "";
+  document.getElementById("notes-textarea").value = p.notes || "";
+  sincronitzarNotes(p.notes || "");
+  document.getElementById("tax-enable").checked = !!p.taxEnable;
+  document.getElementById("tax-pax").value = p.taxPax || 0;
+  document.getElementById("tax-nits").value = p.taxNits || 0;
+
+  const si = document.getElementById("staff-name-input");
+  if (si) { si.value = p.staffName || ""; sincronitzarNomResponsable(si.value); }
+  if (p.managerKey && cfg().managers && cfg().managers[p.managerKey]) {
+    document.getElementById("manager-select").value = p.managerKey;
+    canviarGestor(p.managerKey);
+  }
+
+  if (p.paymentType) { document.getElementById("payment-type-toggle").value = p.paymentType; canviarTipusModalitatPagament(p.paymentType); }
+  document.getElementById("tpv-url-input").value = p.tpvUrl || "";
+  sincronitzarUrlTpv(p.tpvUrl || "");
+
+  sincronitzarDadesClient();
+  if (p.lang) { document.getElementById("lang-select").value = p.lang; currentLang = p.lang; }
+
+  (p.items || []).forEach(it => {
+    if (!it.qty && !it.preu && (!it.concept || !it.concept.trim())) return;
+    const target = it.bodyId && document.getElementById(it.bodyId) ? it.bodyId : "body-allotjament";
+    const cat = categoriaDeTbody(target);
+    afegirFila(target, cat, parseFloat(it.qty) || 0, parseFloat(it.nits) || 0, parseFloat(it.preu) || 0, it.startDate || "", it.endDate || "");
+    const last = document.querySelector("#" + target + " tr:last-child");
+    if (!last) return;
+    const d = last.querySelector(".desc"); if (d) d.value = it.desc || 0;
+    const iv = last.querySelector(".iva"); if (iv) iv.value = it.iva || 10;
+    const cell = last.querySelector(".concept-cell");
+    if (it.isCustom) {
+      cell.innerHTML = `<div style="display:flex;gap:4px;align-items:center;">
+        <input type="text" class="custom-input" value="${esc(it.concept)}" style="flex:1;" oninput="recalcular()">
+        <button class="btn-revert" title="Tornar a la llista" onclick="revertirCustom(this)">↺</button></div>`;
+    } else {
+      const s = cell.querySelector(".concept-select");
+      if (s) s.value = it.concept;
+    }
+  });
+
+  (p.payments || []).forEach(pm => {
+    afegirTramPagament(parseFloat(pm.pct) || 0, pm.date || "", !!pm.isFinal, pm.mode || "FIXED", parseInt(pm.days) || 14);
+    const rows = document.querySelectorAll("#payment-rows-container .payment-row");
+    const last = rows[rows.length - 1];
+    if (!last) return;
+    if (pm.lastEdited) last.setAttribute("data-last-edited", pm.lastEdited);
+    if (pm.amount) { const a = last.querySelector(".pay-amount-input"); if (a) a.value = parseFloat(pm.amount).toFixed(2); }
+    if (pm.isPaid) { const c = last.querySelector('input[type="checkbox"]'); if (c) { c.checked = true; marcarPagat(c); } }
+  });
+
+  (p.cancellations || []).forEach(cn => afegirTramCancelacio(cn.type, parseInt(cn.d1) || 0, parseInt(cn.d2) || 0, parseFloat(cn.pct) || 0));
+
+  calcNoptes();
+  canviarIdioma(currentLang);
+}
+
+async function guardarProformaActual() {
+  if (!validarResponsable()) return;
+  const data = serialitzarFormulari();
+  if (!data.num) { alert("S'ha d'indicar un número de proforma!"); return; }
+  try {
+    await fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST", mode: "no-cors",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: "data=" + encodeURIComponent(JSON.stringify(data))
+    });
+    alert(`Proforma ${data.num} enviada a desar a Google Sheets!`);
+    setTimeout(actualitzarDesplegableProformes, 1500);
+  } catch (e) { console.error(e); alert("Error en l'enviament a Google Sheets."); }
+}
+
+function carregarProformaSeleccionada() {
+  const id = document.getElementById("proformas-list").value;
+  if (!id) return;
+  const p = globalProformasDB[id];
+  if (!p) return;
+  hidratarFormulari(p);
+}
+
+function duplicarProforma() {
+  document.getElementById("proforma-num-input").value = generarSeguentNumProforma();
+  alert("Nou número assignat. Revisa les dades i desa.");
+}
+
+function crearNovaProforma() {
+  const c = cfg();
+  ["body-allotjament", "body-sales", "body-restauracio"].forEach(id => { const e = document.getElementById(id); if (e) e.innerHTML = ""; });
+  document.getElementById("payment-rows-container").innerHTML = "";
+  document.getElementById("canc-rows-container").innerHTML = "";
+
+  document.getElementById("proforma-num-input").value = generarSeguentNumProforma();
+  document.getElementById("data-doc").value = avuiISO();
+  ["client-company-input","client-nif-input","client-name-input","client-email-input","group-name-input","pms-ref-input","in-date","out-date"].forEach(i => document.getElementById(i).value = "");
+  document.getElementById("nits-num").value = "0";
+  document.getElementById("notes-textarea").value = ""; sincronitzarNotes("");
+  document.getElementById("tax-enable").checked = false;
+  document.getElementById("tax-pax").value = 0; document.getElementById("tax-nits").value = 0;
+
+  const si = document.getElementById("staff-name-input");
+  if (si) { si.value = c.defaultStaff || ""; sincronitzarNomResponsable(si.value); }
+  if (c.managers) { const k = Object.keys(c.managers)[0]; document.getElementById("manager-select").value = k; canviarGestor(k); }
+
+  document.getElementById("payment-type-toggle").value = "BANK"; canviarTipusModalitatPagament("BANK");
+  document.getElementById("tpv-url-input").value = ""; sincronitzarUrlTpv("");
+  sincronitzarDadesClient();
+
+  afegirTramPagament(25, "", false, "AFTER_CONF", 7);
+  afegirTramPagament(50, "", false, "BEFORE_ARR", 30);
+  afegirTramPagament(0, "", true, "BEFORE_ARR", 14);
+  afegirTramCancelacio("FREE", 61);
+  afegirTramCancelacio("RANGE", 60, 22, 25);
+  afegirTramCancelacio("RANGE", 21, 15, 50);
+  afegirTramCancelacio("RANGE", 14, 8, 75);
+  afegirTramCancelacio("ARRIVAL", 7, 0, 100);
+  afegirFila("body-allotjament", "ALLOTJAMENT", 0, 0, 0);
+  canviarIdioma(currentLang);
+  programarEsborrany();
+}
+
+/* =====================================================================
+   13) ESBORRANY LOCAL
+   ===================================================================== */
+let timerEsborrany = null;
+function clauEsborrany() { return "proforma_esborrany_" + currentHotelKey; }
+function programarEsborrany() {
+  clearTimeout(timerEsborrany);
+  timerEsborrany = setTimeout(() => {
+    try { localStorage.setItem(clauEsborrany(), JSON.stringify(serialitzarFormulari())); } catch (e) {}
+  }, 700);
+}
+function carregarEsborrany() {
+  try {
+    const raw = localStorage.getItem(clauEsborrany());
+    if (!raw) { crearNovaProforma(); return; }
+    hidratarFormulari(JSON.parse(raw));
+  } catch (e) { crearNovaProforma(); }
+}
+
+/* =====================================================================
+   14) MODALITAT DE PAGAMENT / TPV / IMPRESSIÓ
+   ===================================================================== */
+function canviarTipusModalitatPagament(type) {
+  const t = translations[currentLang];
+  const title = document.getElementById("bank-card-title-text");
+  const grid = document.getElementById("bank-details-grid-block");
+  const tpv = document.getElementById("tpv-details-box-block");
+  const notice = document.getElementById("bank-notice-text-elem");
+  if (type === "TPV") {
+    title.textContent = t.bank_title_tpv;
+    grid.style.display = "none"; tpv.style.display = "block";
+    notice.textContent = t.tpv_concept_text;
+  } else {
+    title.textContent = t.bank_title;
+    grid.style.display = "grid"; tpv.style.display = "none";
+    notice.textContent = t.bank_concept_text;
+  }
+}
+function sincronitzarUrlTpv(val) {
+  const l = document.getElementById("tpv-print-link-elem");
+  if (l) { l.href = val || "#"; l.textContent = val || "-"; }
+}
+
+function prepararNomIImprimir() {
+  if (!validarResponsable()) return;
+  sincronitzarNotes(document.getElementById("notes-textarea").value);
+  const loc = (document.getElementById("pms-ref-input").value || "RESERVA").replace(/[^a-zA-Z0-9]/g, "");
+  const grup = (document.getElementById("group-name-input").value || "GRUP").replace(/[^a-zA-Z0-9]/g, "");
+  const num = (document.getElementById("proforma-num-input").value || "PROFORMA").replace(/[^a-zA-Z0-9\-]/g, "");
+  const inDate = document.getElementById("in-date").value || "DATA";
+  const original = document.title;
+  document.title = `${loc}_${grup}_${num}_${inDate}`;
+  setTimeout(() => { window.print(); setTimeout(() => { document.title = original; }, 1000); }, 100);
+}
+
+/* =====================================================================
+   15) ARRENCADA
+   ===================================================================== */
+function arrencar() {
+  const sel = document.getElementById("hotel-select");
+  sel.innerHTML = HOTEL_KEYS.map(k => `<option value="${k}">${esc(CONFIG.hotels[k].name)}</option>`).join("");
+  aplicarHotel(currentHotelKey);
+  document.getElementById("data-doc").value = avuiISO();
+  document.addEventListener("input", programarEsborrany);
+  actualitzarDesplegableProformes().then(carregarEsborrany);
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  aplicarHotel(currentHotelKey);
+  document.getElementById("pin-hotel-name").textContent =
+    MODE === "locked" ? cfg().name : "Accés central — " + CONFIG.hotels[currentHotelKey].name;
+  document.querySelectorAll('input[type="date"]').forEach(i => i.setAttribute("max", "2050-12-31"));
+  if (sessionStorage.getItem(clauSessio()) === "true") {
+    document.getElementById("pin-lock-overlay").style.display = "none";
+    arrencar();
+  }
+});
+</script>
+</body>
+</html>
