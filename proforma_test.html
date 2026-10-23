@@ -1,0 +1,214 @@
+
+
+<div id="pin-lock-overlay">
+  <div class="pin-card">
+    <h3>🔒 Accés Restringit</h3>
+    <p id="pin-hotel-name">Carregant…</p>
+    <form id="pin-form">
+      <input type="password" id="pin-input" placeholder="Introdueix la clau d'accés" required="">
+      <button type="submit">Entrar</button>
+    </form>
+    <div id="pin-error-msg">⚠️ Clau d'accés incorrecta!</div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="control-bar no-print">
+    <div class="control-group">
+      <span id="hotel-badge" class="hotel-badge">🏨 Hotel</span>
+      <select id="hotel-select" style="width:210px; display:none;"></select>
+      <button class="btn btn-ghost" title="Tancar sessió">🔓 Sortir</button>
+    </div>
+    <div class="control-group">
+      <label>📊 Google Sheets:</label>
+      <select id="proformas-list" style="width:220px;">
+        <option value="">-- Selecciona per carregar --</option>
+      </select>
+      <button class="btn btn-save">Carregar</button>
+    </div>
+    <div class="control-group">
+      <span id="manager-select-wrap" style="display:none;">
+        <label for="manager-select">👤 Gestor/a:</label>
+        <select id="manager-select" style="width:170px;"></select>
+      </span>
+      <button class="btn btn-add">+ Nova Proforma</button>
+      <button class="btn btn-save">⧉ Duplicar</button>
+      <button class="btn btn-save">💾 Desar a Google Sheets</button>
+      <label for="lang-select" style="margin-left:10px;">🌐 Idioma:</label>
+      <select id="lang-select" style="width:100px;">
+        <option value="ca" selected="">Català</option>
+        <option value="es">Español</option>
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="header">
+    <div class="brand">
+      <img id="hdr-logo" src="" alt="" class="logo-hotel">
+      <div id="hdr-lines"></div>
+    </div>
+    <div class="doc-meta">
+      <h2>PROFORMA</h2>
+      <div class="meta-row">
+        <label data-i18n="num_proforma">Núm:</label>
+        <input type="text" id="proforma-num-input" value="" style="width:120px; text-align:right; font-weight:bold;">
+      </div>
+      <div class="meta-row">
+        <label data-i18n="data_doc">Data:</label>
+        <input type="date" id="data-doc" max="2050-12-31" style="width:125px;">
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3 data-i18n="title_client">Dades del Client / Agència</h3>
+      <div class="field-group"><label data-i18n="label_company">Empresa / Agència:</label><input type="text" id="client-company-input" placeholder="Nom de la companyia"></div>
+      <div class="field-group"><label data-i18n="label_nif">NIF / CIF / Passaport:</label><input type="text" id="client-nif-input" class="uppercase-input" placeholder="Codi fiscal"></div>
+      <div class="field-group"><label data-i18n="label_contact">Persona Contacte:</label><input type="text" id="client-name-input" placeholder="Nom del responsable"></div>
+      <div class="field-group"><label data-i18n="label_email">Email / Telèfon:</label><input type="text" id="client-email-input" placeholder="contacte@empresa.com"></div>
+    </div>
+    <div class="card">
+      <h3 data-i18n="title_group">Detalls del Grup / Event</h3>
+      <div class="field-group"><label data-i18n="label_group_name">Nom del Grup:</label><input type="text" id="group-name-input" placeholder="Ex: Congrés MedTech"></div>
+      <div class="field-group"><label data-i18n="label_pms_ref">Ref. Reserva / PMS:</label><input type="text" id="pms-ref-input" class="uppercase-input" placeholder="GRP-88231"></div>
+      <div class="field-group">
+        <label data-i18n="label_dates">Entrada / Sortida:</label>
+        <input type="date" id="in-date" max="2050-12-31" style="width:48%; display:inline-block;">
+        <input type="date" id="out-date" max="2050-12-31" style="width:48%; display:inline-block; margin-left:2%;">
+      </div>
+      <div class="field-group"><label data-i18n="label_nights">Nits Calculades:</label><input type="text" id="nits-num" value="0" readonly="" style="background:#eee; font-weight:bold;"></div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:26%;" data-i18n="th_concept">Concepte / Servei</th>
+        <th style="width:20%; text-align:center;" data-i18n="th_item_dates">Dates</th>
+        <th style="width:6%; text-align:center;" data-i18n="th_units">Unitats</th>
+        <th style="width:6%; text-align:center;" data-i18n="th_nights">Nits/Dies</th>
+        <th style="width:12%; text-align:right;" data-i18n="th_price">Preu Un. IVA incl. (€)</th>
+        <th style="width:6%; text-align:center;" data-i18n="th_discount">Desc. (%)</th>
+        <th style="width:13%; text-align:center;" data-i18n="th_vat_type">Tipus IVA</th>
+        <th style="width:11%; text-align:right;" data-i18n="th_total">Total IVA incl. (€)</th>
+        <th class="toolbar" style="width:2%;"></th>
+      </tr>
+    </thead>
+  </table>
+
+  <div class="sec-wrapper">
+    <div class="section-header">
+      <span data-i18n="sec_accommodation">1. ALLOTJAMENT I SUPLEMENTS (IVA 10%)</span>
+      <button class="btn btn-add" data-i18n="btn_add_room">+ Afegir Habitació</button>
+    </div>
+    <table><tbody id="body-allotjament"></tbody></table>
+  </div>
+
+  <div class="sec-wrapper">
+    <div class="section-header">
+      <span data-i18n="sec_rooms">2. SALES I EQUIPAMENTS (IVA 21%)</span>
+      <button class="btn btn-add" data-i18n="btn_add_room_eq">+ Afegir Sala / Equip</button>
+    </div>
+    <table><tbody id="body-sales"></tbody></table>
+  </div>
+
+  <div class="sec-wrapper">
+    <div class="section-header">
+      <span data-i18n="sec_catering">3. RESTAURACIÓ I CÀTERING (IVA 10%)</span>
+      <button class="btn btn-add" data-i18n="btn_add_catering">+ Afegir Servei Càtering</button>
+    </div>
+    <table><tbody id="body-restauracio"></tbody></table>
+  </div>
+
+  <div class="tax-card" id="tax-card-block">
+    <h4>
+      <input type="checkbox" id="tax-enable" style="width:16px; height:16px;">
+      <span data-i18n="tax_title">Taxa Turística</span>
+    </h4>
+    <div class="tax-grid" id="tax-controls">
+      <div><label data-i18n="tax_pax_label">Persones &gt; 17 anys:</label><input type="number" id="tax-pax" value="0" min="0"></div>
+      <div><label data-i18n="tax_nights_label">Nits a liquidar (Màx 7):</label><input type="number" id="tax-nits" value="0" min="0" max="7"></div>
+      <div><label data-i18n="tax_rate_label">Tarifa per Nit/Pax (IVA incl.):</label><input type="text" id="tax-rate-display" readonly="" style="background:#eef; font-weight:bold;"></div>
+      <div><label data-i18n="tax_total_label">Total Taxa Turística (10% IVA incl.):</label><input type="text" id="tax-total-display" readonly="" style="background:#eef; font-weight:bold; color:var(--primary);"></div>
+    </div>
+  </div>
+
+  <div class="summary-block">
+    <div class="payment-schedule">
+      <h4>
+        <span data-i18n="title_payments">Calendari de Dipòsits i Pagaments</span>
+        <button class="btn btn-add" data-i18n="btn_add_deposit">+ Dipòsit Intermedi</button>
+      </h4>
+      <div id="payment-rows-container"></div>
+      <div id="pct-alert" class="pct-alert" data-i18n="pct_alert_msg">⚠️ Els dipòsits intermedis superen el total de la proforma!</div>
+    </div>
+    <div>
+      <table class="totals-table">
+        <tbody><tr><td data-i18n="base_10_label">Base Imposable Allotj./Rest. (10%):</td><td id="base-10">0.00 €</td></tr>
+        <tr><td data-i18n="vat_10_label">Quota IVA Allotj./Rest. (10%):</td><td id="iva-10">0.00 €</td></tr>
+        <tr><td data-i18n="base_21_label">Base Imposable Sales/Equips (21%):</td><td id="base-21">0.00 €</td></tr>
+        <tr><td data-i18n="vat_21_label">Quota IVA Sales/Equips (21%):</td><td id="iva-21">0.00 €</td></tr>
+        <tr id="row-taxa-base" style="display:none; color:#555;"><td data-i18n="base_tax_label">Base Imposable Taxa Turística (10%):</td><td id="val-taxa-base">0.00 €</td></tr>
+        <tr id="row-taxa-iva" style="display:none; color:#555;"><td data-i18n="vat_tax_label">Quota IVA Taxa Turística (10%):</td><td id="val-taxa-iva">0.00 €</td></tr>
+        <tr class="grand-total"><td><strong data-i18n="total_proforma_label">TOTAL PROFORMA:</strong></td><td id="total-final"><strong>0.00 €</strong></td></tr>
+      </tbody></table>
+    </div>
+  </div>
+
+  <div class="cancellation-section">
+    <h4>
+      <span data-i18n="title_cancellation">Terminis i Condicions de Cancel·lació de Grups</span>
+      <button class="btn btn-add" data-i18n="btn_add_cancellation">+ Afegir Tram Intermedi</button>
+    </h4>
+    <div id="canc-rows-container"></div>
+  </div>
+
+  <div class="bank-card">
+    <h4>
+      <span id="bank-card-title-text" data-i18n="bank_title">💳 Dades Bancàries i Transferència</span>
+      <span class="no-print">
+        <select id="payment-type-toggle" class="payment-type-select" style="font-size:11px; padding:3px 6px;">
+          <option value="BANK" selected="">🏦 Transferència Bancària</option>
+          <option value="TPV">💳 TPV Virtual / Targeta de Crèdit</option>
+        </select>
+      </span>
+    </h4>
+    <div id="bank-details-grid-block" class="bank-details-grid">
+      <div class="bank-item"><span class="label" data-i18n="bank_label_bank">Entitat Bancària</span><span class="value" id="bank-entity"></span></div>
+      <div class="bank-item"><span class="label">IBAN</span><span class="value" id="bank-iban"></span></div>
+      <div class="bank-item"><span class="label">SWIFT / BIC</span><span class="value" id="bank-swift"></span></div>
+    </div>
+    <div id="tpv-details-box-block" class="tpv-details-box">
+      <label data-i18n="tpv_url_label">🔗 Enllaç de Pagament Directe per Targeta (TPV Virtual):</label>
+      <input type="url" id="tpv-url-input" placeholder="https://tpv.redsys.es/...">
+      <a id="tpv-print-link-elem" href="#" class="tpv-print-link">-</a>
+    </div>
+    <div id="bank-notice-block" class="bank-notice">📌 <span id="bank-notice-text-elem" data-i18n="bank_concept_text">Cal indicar el número de proforma o nom del grup en el concepte de la transferència.</span></div>
+    <div id="tax-disclaimer-text" class="tax-disclaimer" data-i18n="notes_tax_disclaimer"></div>
+    <textarea id="notes-textarea" placeholder="Observacions i comentaris addicionals..."></textarea>
+    <div id="notes-print-box" class="print-notes-box"></div>
+  </div>
+
+  <div class="signatures-wrapper">
+    <div class="client-signature-box">
+      <h4 data-i18n="client_signature_title">Conformitat i Acceptació del Client</h4>
+      <div class="client-fields">
+        <p><strong data-i18n="client_company_label">Empresa / Agència:</strong> <span id="client-company-disp">-</span></p>
+        <p><strong data-i18n="client_nif_label">NIF / CIF:</strong> <span id="client-nif-disp">-</span></p>
+        <p><strong data-i18n="client_rep_label">Representant:</strong> <span id="client-name-disp">-</span></p>
+      </div>
+      <div class="signature-line-space" id="sig-space" data-sign-label="Signatura i Segell del Client"></div>
+    </div>
+    <div class="hotel-signature-box" id="hotel-signature-box"></div>
+  </div>
+
+  <div class="toolbar" style="margin-top:20px; justify-content:flex-end;">
+    <button id="btn-print" class="btn btn-print" data-i18n="btn_print">Imprimir / Generar PDF</button>
+  </div>
+</div>
+
+
+
